@@ -4,6 +4,7 @@ import { ArrowRight, CheckCircle, Shield, Zap, BarChart3, Users, Layers, Globe, 
 import { motion, useScroll, useTransform } from 'motion/react';
 import logo from '../assets/logo1.png';
 import { FloatingContactButtons } from '../components/FloatingContactButtons';
+import { API_PUBLIC_BASE } from '../config/api';
 
 
 export function LandingPage() {
@@ -139,7 +140,7 @@ export function LandingPage() {
 
   // Fetch live reviews from Backend DB on mount (DB is single source of truth for approved reviews)
   useEffect(() => {
-    fetch('http://localhost:8081/api/v1/public/reviews')
+    fetch(`${API_PUBLIC_BASE}/reviews`)
       .then(res => res.json())
       .then(data => {
         if (data.success && Array.isArray(data.data)) {
@@ -1007,7 +1008,7 @@ export function LandingPage() {
                         onClick={async () => {
                           setReviewsList(prev => prev.map(item => item.id === review.id ? { ...item, likes: item.likes + 1 } : item));
                           try {
-                            await fetch(`http://localhost:8081/api/v1/public/reviews/${review.id}/like`, { method: 'POST' });
+                            await fetch(`${API_PUBLIC_BASE}/reviews/${review.id}/like`, { method: 'POST' });
                           } catch {
                             // ignore
                           }
@@ -1103,7 +1104,7 @@ export function LandingPage() {
                     
                     let createdRev: any = null;
                     try {
-                      const res = await fetch('http://localhost:8081/api/v1/public/reviews', {
+                      const res = await fetch(`${API_PUBLIC_BASE}/reviews`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload),

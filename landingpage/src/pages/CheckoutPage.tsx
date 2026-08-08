@@ -36,7 +36,7 @@ interface OrderData {
   description: string;
 }
 
-const API_BASE = 'http://localhost:8081/api/v1/public';
+import { API_PUBLIC_BASE as API_BASE } from '../config/api';
 
 export function CheckoutPage() {
   const navigate = useNavigate();

@@ -6,16 +6,16 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGri
 
 export const ReviewManagement: React.FC = () => {
   const [reviews, setReviews] = useState<UserReview[]>([]);
-  const [stats, setStats] = useState({
+  const [_stats, setStats] = useState({
     totalReviews: 0,
     avgRating: 5.0,
     approvedCount: 0,
     pendingCount: 0,
     rejectedCount: 0,
   });
-  const [featureBreakdown, setFeatureBreakdown] = useState<any[]>([]);
+  const [_featureBreakdown, setFeatureBreakdown] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [_error, setError] = useState<string | null>(null);
 
   // Filters state
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
@@ -285,7 +285,7 @@ export const ReviewManagement: React.FC = () => {
                   formatter={(value: any) => [`${value} / 5.0 ⭐`, 'Điểm Trung Bình']}
                 />
                 <Bar dataKey="avgRating" radius={[12, 12, 0, 0]} barSize={90}>
-                  {pillarChartData.map((entry, index) => (
+                  {pillarChartData.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={PILLAR_COLORS[index]} />
                   ))}
                 </Bar>

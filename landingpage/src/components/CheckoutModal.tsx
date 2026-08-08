@@ -24,7 +24,7 @@ interface OrderData {
   description: string;
 }
 
-const API_BASE = 'http://localhost:8081/api/v1/public';
+import { API_PUBLIC_BASE as API_BASE } from '../config/api';
 
 export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, planName = 'Gói Cơ Bản (Basic)', planPrice = '1.000.000 VNĐ' }) => {
   const [step, setStep] = useState<1 | 2 | 3>(1);
