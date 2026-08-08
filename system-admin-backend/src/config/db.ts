@@ -83,25 +83,48 @@ export async function initDbTables() {
         updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
       );
 
-      -- 5. employees table
-      CREATE TABLE IF NOT EXISTS employees (
+      -- 5. departments table
+      CREATE TABLE IF NOT EXISTS departments (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         company_id UUID REFERENCES companies(id) ON DELETE CASCADE,
-        full_name VARCHAR(255) NOT NULL,
-        position VARCHAR(255),
+        name VARCHAR(255) NOT NULL,
+        code VARCHAR(100),
+        status VARCHAR(50) DEFAULT 'ACTIVE',
         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
         updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
       );
 
-      -- 6. user_accounts table
+      -- 6. employees table
+      CREATE TABLE IF NOT EXISTS employees (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        company_id UUID REFERENCES companies(id) ON DELETE CASCADE,
+        department_id UUID,
+        full_name VARCHAR(255) NOT NULL,
+        email VARCHAR(255),
+        position VARCHAR(255),
+        position_title VARCHAR(255),
+        status VARCHAR(50) DEFAULT 'ACTIVE',
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      );
+      ALTER TABLE employees ADD COLUMN IF NOT EXISTS department_id UUID;
+      ALTER TABLE employees ADD COLUMN IF NOT EXISTS email VARCHAR(255);
+      ALTER TABLE employees ADD COLUMN IF NOT EXISTS position_title VARCHAR(255);
+      ALTER TABLE employees ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'ACTIVE';
+
+      -- 7. user_accounts table
       CREATE TABLE IF NOT EXISTS user_accounts (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         employee_id UUID REFERENCES employees(id) ON DELETE CASCADE,
         email VARCHAR(255) UNIQUE NOT NULL,
+        password_hash VARCHAR(255),
         role VARCHAR(100) DEFAULT 'USER',
+        status VARCHAR(50) DEFAULT 'ACTIVE',
         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
         updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
       );
+      ALTER TABLE user_accounts ADD COLUMN IF NOT EXISTS password_hash VARCHAR(255);
+      ALTER TABLE user_accounts ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'ACTIVE';
 
       -- 7. system_invoices table
       CREATE TABLE IF NOT EXISTS system_invoices (
