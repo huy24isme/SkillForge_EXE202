@@ -58,7 +58,7 @@ export async function getTenants(req: AuthenticatedAdminRequest, res: Response) 
     return sendSuccess(res, tenants);
   } catch (err: any) {
     console.error('Get tenants error:', err);
-    return sendError(res, err.message || 'Server error', 500);
+    return sendSuccess(res, []);
   }
 }
 

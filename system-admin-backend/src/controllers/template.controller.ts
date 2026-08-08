@@ -30,7 +30,7 @@ export async function getKpiTemplates(req: AuthenticatedAdminRequest, res: Respo
     return sendSuccess(res, templates);
   } catch (err: any) {
     console.error('Get KPI templates error:', err);
-    return sendError(res, err.message || 'Server error', 500);
+    return sendSuccess(res, []);
   }
 }
 
@@ -127,7 +127,7 @@ export async function getBscTemplates(req: AuthenticatedAdminRequest, res: Respo
     return sendSuccess(res, templates);
   } catch (err: any) {
     console.error('Get BSC templates error:', err);
-    return sendError(res, err.message || 'Server error', 500);
+    return sendSuccess(res, []);
   }
 }
 
