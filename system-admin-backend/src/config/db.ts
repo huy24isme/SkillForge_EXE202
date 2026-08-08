@@ -5,8 +5,12 @@ dotenv.config();
 
 const { Pool } = pg;
 
+const connectionString = process.env.DATABASE_URL || 'postgres://bsc_user:bsc_password@localhost:5432/bsc_skillforge';
+const isRemoteDb = connectionString.includes('render.com') || connectionString.includes('neon.tech') || connectionString.includes('supabase.co') || connectionString.includes('aivencloud.com') || process.env.NODE_ENV === 'production';
+
 export const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgres://bsc_user:bsc_password@localhost:5432/bsc_skillforge',
+  connectionString,
+  ssl: isRemoteDb ? { rejectUnauthorized: false } : false,
 });
 
 pool.on('error', (err) => {
