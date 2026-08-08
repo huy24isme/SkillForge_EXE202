@@ -603,22 +603,13 @@ export function CheckoutPage() {
                   </div>
                 </div>
 
-                <div className="pt-4 flex flex-col sm:flex-row justify-center gap-4">
+                <div className="pt-4 flex justify-center">
                   <Link
                     to="/"
-                    className="px-8 py-3.5 bg-white/10 text-white font-bold rounded-xl hover:bg-white/20 transition-all text-xs text-center"
+                    className="px-8 py-3.5 bg-[#3AE7E1] text-[#0B1C2D] font-bold rounded-xl hover:shadow-[0_0_25px_rgba(58,231,225,0.4)] transition-all text-xs text-center"
                   >
-                    Về Trang chủ
+                    Hoàn tất & Về Trang chủ
                   </Link>
-                  <a
-                    href="http://localhost:5174"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="px-8 py-3.5 bg-gradient-to-r from-[#3AE7E1] to-[#2563EB] text-white font-bold rounded-xl shadow-lg hover:shadow-[0_0_25px_rgba(58,231,225,0.4)] transition-all text-xs flex items-center justify-center gap-2"
-                  >
-                    Truy cập System Admin
-                    <ArrowRight className="w-4 h-4" />
-                  </a>
                 </div>
               </motion.div>
             )}
