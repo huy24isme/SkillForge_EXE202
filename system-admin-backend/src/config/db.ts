@@ -48,7 +48,7 @@ export async function initDbTables() {
       );
       ALTER TABLE system_reviews ADD COLUMN IF NOT EXISTS detailed_ratings JSONB;
       ALTER TABLE system_reviews ALTER COLUMN rating TYPE NUMERIC(3,1);
-
+      ALTER TABLE system_audit_logs ALTER COLUMN admin_id DROP NOT NULL;
     `);
     console.log('PostgreSQL system_custom_leads & system_reviews tables initialized successfully');
   } catch (err) {
