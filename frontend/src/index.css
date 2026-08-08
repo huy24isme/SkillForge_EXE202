@@ -1,0 +1,95 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #F1F5F9;
+  color: #1C2434;
+}
+
+#root { min-height: 100vh; }
+
+/* ── Scrollbar ─────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* ── ReactFlow ─────────────────────────────────────────── */
+.react-flow__attribution { display: none; }
+
+/* ── Login background animations ──────────────────────── */
+@keyframes orb-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(60px, -80px) scale(1.15); }
+  66%       { transform: translate(-40px, 40px) scale(0.9); }
+}
+@keyframes orb-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(-70px, 60px) scale(1.1); }
+  66%       { transform: translate(50px, -50px) scale(0.95); }
+}
+@keyframes orb-3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%       { transform: translate(40px, 80px) scale(1.2); }
+}
+@keyframes grid-drift {
+  0%   { transform: translate(0, 0); }
+  100% { transform: translate(24px, 24px); }
+}
+
+.login-orb-1 { animation: orb-1 14s ease-in-out infinite; }
+.login-orb-2 { animation: orb-2 18s ease-in-out infinite; }
+.login-orb-3 { animation: orb-3 22s ease-in-out infinite; }
+.login-grid  { animation: grid-drift 8s linear infinite; }
+
+/* ── Card entrance ─────────────────────────────────────── */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.animate-fade-up { animation: fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.animate-fade-in { animation: fade-in 0.4s ease both; }
+
+/* ── Page transition ───────────────────────────────────── */
+@keyframes page-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.page-enter { animation: page-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) both; }
+
+/* ── Sidebar nav link hover glow ───────────────────────── */
+@keyframes sidebar-glow {
+  from { box-shadow: 0 0 0 0 rgba(60, 80, 224, 0); }
+  to   { box-shadow: 0 0 12px 2px rgba(60, 80, 224, 0.25); }
+}
+
+/* ── Shimmer (loading skeleton) ────────────────────────── */
+@keyframes shimmer {
+  from { background-position: -200% center; }
+  to   { background-position: 200% center; }
+}
+.shimmer {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% auto;
+  animation: shimmer 1.4s linear infinite;
+}
+
+/* ── Stat card hover lift ──────────────────────────────── */
+.card-hover {
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.2s ease;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px -4px rgba(0,0,0,0.10);
+}
