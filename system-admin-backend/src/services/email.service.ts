@@ -18,14 +18,23 @@ export async function sendOtpEmail({ to, code }: SendOtpEmailParams): Promise<bo
     return false;
   }
 
+  const cleanPass = smtpPass.replace(/\s+/g, '');
+  const isPort465 = smtpPort === 465;
+
   try {
     const transporter = nodemailer.createTransport({
       host: smtpHost,
       port: smtpPort,
-      secure: smtpPort === 465, // true for 465, false for other ports
+      secure: isPort465,
       auth: {
         user: smtpUser,
-        pass: smtpPass,
+        pass: cleanPass,
+      },
+      connectionTimeout: 8000,
+      greetingTimeout: 8000,
+      socketTimeout: 10000,
+      tls: {
+        rejectUnauthorized: false,
       },
     });
 
