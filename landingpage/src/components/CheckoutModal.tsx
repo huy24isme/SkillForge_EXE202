@@ -230,6 +230,22 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, p
     }
   };
 
+  useEffect(() => {
+    if (step !== 2 || !orderData) return;
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`${API_BASE}/orders/${orderData.orderCode}/status`);
+        const json = await res.json();
+        if (json.success && json.data?.status === 'SUCCESS') {
+          setStep(3);
+        }
+      } catch {
+        // ignore
+      }
+    }, 2500);
+    return () => clearInterval(interval);
+  }, [step, orderData]);
+
   if (!mounted) return null;
 
   const portalTarget = document.getElementById('portal-root') || document.body;

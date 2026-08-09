@@ -269,6 +269,22 @@ export function CheckoutPage() {
     }
   };
 
+  useEffect(() => {
+    if (step !== 2 || !orderData) return;
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`${API_BASE}/orders/${orderData.orderCode}/status`);
+        const json = await res.json();
+        if (json.success && json.data?.status === 'SUCCESS') {
+          setStep(3);
+        }
+      } catch {
+        // ignore
+      }
+    }, 2500);
+    return () => clearInterval(interval);
+  }, [step, orderData]);
+
   return (
     <div className="min-h-screen bg-[#0B1C2D] text-white font-sans selection:bg-[#3AE7E1] selection:text-[#0B1C2D] relative overflow-x-hidden flex flex-col">
       {/* Background Animated Glows */}

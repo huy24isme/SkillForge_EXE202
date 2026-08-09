@@ -76,27 +76,67 @@ export class PayOSService {
   }
 
   /**
-   * Create dynamic VietQR & PayOS payment link
+   * Create dynamic VietQR & PayOS payment link via PayOS /v2/payment-requests API
    */
   public async createPaymentLink(params: CreatePaymentLinkParams): Promise<PaymentLinkResult> {
     const { orderCode, amount, description } = params;
     const cleanDesc = description.slice(0, 25).trim();
 
-    // Generate VietQR dynamic QR image URL
+    // Fallback VietQR image URL
     const encodedDesc = encodeURIComponent(cleanDesc);
     const encodedName = encodeURIComponent(this.accountName);
-    const qrCodeUrl = `https://img.vietqr.io/image/${this.bankId}-${this.accountNo}-compact2.png?amount=${amount}&addInfo=${encodedDesc}&accountName=${encodedName}`;
+    let qrCodeUrl = `https://img.vietqr.io/image/${this.bankId}-${this.accountNo}-compact2.png?amount=${amount}&addInfo=${encodedDesc}&accountName=${encodedName}`;
+    let checkoutUrl = `https://payos.vn/checkout/${orderCode}`;
+    let accountNo = this.accountNo;
+    let accountName = this.accountName;
+    let bankName = this.bankId;
 
-    const checkoutUrl = `https://payos.vn/checkout/${orderCode}`;
+    // Call official PayOS /v2/payment-requests API if credentials exist
+    if (this.clientId && this.apiKey && this.checksumKey) {
+      try {
+        const payload = {
+          orderCode,
+          amount,
+          description: cleanDesc,
+          cancelUrl: params.cancelUrl || 'https://skillforge-exe202.onrender.com/checkout?cancel=true',
+          returnUrl: params.returnUrl || 'https://skillforge-exe202.onrender.com/checkout?success=true',
+        };
+        const signature = this.generateSignature(payload);
+        const reqBody = { ...payload, signature };
+
+        console.log('[PAYOS API v2 CALL] Creating payment request for orderCode:', orderCode);
+        const res = await fetch('https://api-merchant.payos.vn/v2/payment-requests', {
+          method: 'POST',
+          headers: {
+            'x-client-id': this.clientId,
+            'x-api-key': this.apiKey,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(reqBody),
+        });
+        const json: any = await res.json();
+        console.log('[PAYOS API v2 RESPONSE]:', JSON.stringify(json));
+
+        if (json.code === '00' && json.data) {
+          checkoutUrl = json.data.checkoutUrl || checkoutUrl;
+          qrCodeUrl = json.data.qrCode || qrCodeUrl;
+          accountNo = json.data.accountNumber || accountNo;
+          accountName = json.data.accountName || accountName;
+          bankName = json.data.bin || bankName;
+        }
+      } catch (err: any) {
+        console.warn('PayOS API v2 request warning, fallback to VietQR:', err?.message || err);
+      }
+    }
 
     return {
       orderCode,
       amount,
       checkoutUrl,
       qrCodeUrl,
-      accountNo: this.accountNo,
-      accountName: this.accountName,
-      bankName: this.bankId,
+      accountNo,
+      accountName,
+      bankName,
       description: cleanDesc,
     };
   }
