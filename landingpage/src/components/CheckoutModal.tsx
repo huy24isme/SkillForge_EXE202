@@ -159,10 +159,6 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, p
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!otpVerified) {
-      setError('Vui lòng hoàn tất bước Xác thực Mã OTP 6 số cho Email trước khi tiến hành thanh toán!');
-      return;
-    }
     setLoading(true);
     setError(null);
 
@@ -330,110 +326,22 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, p
                   </div>
 
                   <div>
-                    <div className="flex justify-between items-center mb-1">
-                      <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider">
-                        Email Đăng ký Quản trị *
-                      </label>
-                      {otpVerified && (
-                        <div className="flex items-center gap-2">
-                          <span className="text-[11px] font-bold text-emerald-400 flex items-center gap-1">
-                            <CheckCircle className="w-3 h-3" /> Đã xác thực
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setOtpVerified(false);
-                              setOtpSent(false);
-                              setOtpCode('');
-                              setOtpDemoMessage(null);
-                            }}
-                            className="text-[10px] text-slate-400 hover:text-[#3AE7E1] underline"
-                          >
-                            Thay đổi Email
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                    <div className="relative flex items-center gap-2">
-                      <div className="relative flex-1">
-                        <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
-                        <input
-                          type="email"
-                          required
-                          disabled={otpVerified}
-                          value={adminEmail}
-                          onChange={(e) => {
-                            setAdminEmail(e.target.value);
-                            if (otpSent) {
-                              setOtpSent(false);
-                              setOtpVerified(false);
-                            }
-                          }}
-                          placeholder="admin@congtyabc.com"
-                          className="w-full text-xs pl-10 pr-3 py-3 bg-[#0B1C2D] border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-[#3AE7E1] disabled:opacity-60"
-                        />
-                      </div>
-                      {!otpVerified && (
-                        <button
-                          type="button"
-                          onClick={handleSendOtp}
-                          disabled={sendingOtp || !adminEmail}
-                          className="px-3.5 py-3 bg-gradient-to-r from-[#3AE7E1] to-[#2563EB] text-white font-bold text-xs rounded-xl hover:opacity-90 transition-all disabled:opacity-40 whitespace-nowrap flex items-center gap-1.5"
-                        >
-                          {sendingOtp ? (
-                            <>
-                              <Loader2 className="w-3 h-3 animate-spin" />
-                              Đang gửi...
-                            </>
-                          ) : (
-                            <>
-                              <Sparkles className="w-3 h-3" />
-                              {otpSent ? 'Gửi lại OTP' : 'Gửi mã OTP'}
-                            </>
-                          )}
-                        </button>
-                      )}
+                    <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">
+                      Email Đăng ký Quản trị *
+                    </label>
+                    <div className="relative">
+                      <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+                      <input
+                        type="email"
+                        required
+                        value={adminEmail}
+                        onChange={(e) => setAdminEmail(e.target.value)}
+                        placeholder="admin@congtyabc.com"
+                        className="w-full text-xs pl-10 pr-3 py-3 bg-[#0B1C2D] border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-[#3AE7E1]"
+                      />
                     </div>
                   </div>
                 </div>
-
-
-
-                {/* OTP Sent Status Notification Banner */}
-                {otpSent && !otpVerified && (
-                  <div className="p-3.5 rounded-xl bg-[#3AE7E1]/10 border border-[#3AE7E1]/30 text-[#3AE7E1] text-xs font-mono font-bold flex items-center justify-between">
-                    <span>{otpDemoMessage || `Mã OTP 6 số đã được gửi tới Email ${adminEmail}`}</span>
-                    <span className="text-[10px] bg-[#3AE7E1]/20 px-2 py-0.5 rounded text-white font-sans font-normal">Hạn 5 phút</span>
-                  </div>
-                )}
-
-                {/* OTP Verification Box */}
-                {otpSent && !otpVerified && (
-                  <div className="p-4 rounded-xl bg-white/5 border border-[#3AE7E1]/30 space-y-3">
-                    <label className="block text-xs font-bold text-[#3AE7E1] uppercase tracking-wider">
-                      Nhập mã OTP 6 số đã gửi tới Email *
-                    </label>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        maxLength={6}
-                        value={otpCode}
-                        onChange={(e) => setOtpCode(e.target.value.replace(/[^0-9]/g, ''))}
-                        placeholder="123456"
-                        className="w-full text-center tracking-[0.5em] font-mono text-base font-bold py-2.5 bg-[#0B1C2D] border border-white/20 rounded-xl text-[#3AE7E1] focus:outline-none focus:border-[#3AE7E1]"
-                      />
-                      <button
-                        type="button"
-                        onClick={handleVerifyOtp}
-                        disabled={verifyingOtp || otpCode.length !== 6}
-                        className="px-5 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs rounded-xl transition-all disabled:opacity-40 whitespace-nowrap flex items-center gap-1.5"
-                      >
-                        {verifyingOtp ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle className="w-3.5 h-3.5" />}
-                        Xác nhận OTP
-                      </button>
-                    </div>
-                  </div>
-                )}
 
                 <div>
                   <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">
