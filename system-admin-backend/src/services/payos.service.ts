@@ -119,7 +119,12 @@ export class PayOSService {
 
         if (json.code === '00' && json.data) {
           checkoutUrl = json.data.checkoutUrl || checkoutUrl;
-          qrCodeUrl = json.data.qrCode || qrCodeUrl;
+          if (json.data.qrCode && (json.data.qrCode.startsWith('http://') || json.data.qrCode.startsWith('https://'))) {
+            qrCodeUrl = json.data.qrCode;
+          } else if (json.data.qrCode) {
+            // PayOS returns raw VietQR payload string - render as QR image via QuickChart
+            qrCodeUrl = `https://quickchart.io/qr?text=${encodeURIComponent(json.data.qrCode)}&size=300`;
+          }
           accountNo = json.data.accountNumber || accountNo;
           accountName = json.data.accountName || accountName;
           bankName = json.data.bin || bankName;

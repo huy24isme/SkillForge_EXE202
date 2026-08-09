@@ -579,6 +579,9 @@ export function CheckoutPage() {
                       src={orderData.qrCodeUrl}
                       alt="VietQR Code"
                       className="w-52 h-52 object-contain"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = `https://img.vietqr.io/image/MB-0932556236-compact2.png?amount=${orderData.amount || 1000000}&addInfo=${encodeURIComponent(orderData.description || 'SKF')}&accountName=NGUYEN%20MINH%20HUY`;
+                      }}
                     />
                     <div className="text-[11px] text-slate-800 font-bold mt-2 tracking-wider uppercase flex items-center gap-1">
                       <QrCode className="w-3.5 h-3.5 text-[#2563EB]" /> VietQR Auto-Detect

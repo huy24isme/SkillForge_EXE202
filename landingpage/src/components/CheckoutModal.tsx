@@ -443,6 +443,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, p
                       src={orderData.qrCodeUrl}
                       alt="VietQR Payment Code"
                       className="w-48 h-48 object-contain"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = `https://img.vietqr.io/image/MB-0932556236-compact2.png?amount=${orderData.amount || 1000000}&addInfo=${encodeURIComponent(orderData.description || 'SKF')}&accountName=NGUYEN%20MINH%20HUY`;
+                      }}
                     />
                     <div className="text-[10px] text-slate-700 font-bold mt-1 tracking-wider uppercase">
                       VietQR • Auto-Detect Payment
