@@ -4,6 +4,7 @@ import { pool } from '../config/db';
 import { sendSuccess, sendError } from '../utils/response';
 import { payosService } from '../services/payos.service';
 import { writeAuditLog } from '../services/auditLog.service';
+import { sendOtpEmail } from '../services/email.service';
 
 /**
  * 1. POST /api/v1/public/checkout
@@ -33,11 +34,22 @@ export async function createCheckout(req: Request, res: Response) {
 
     // Check if email already registered
     const dupCheck = await client.query(
-      `SELECT id FROM user_accounts WHERE LOWER(email) = $1 LIMIT 1`,
+      `SELECT u.id, e.company_id, c.status as company_status
+       FROM user_accounts u
+       JOIN employees e ON u.employee_id = e.id
+       JOIN companies c ON e.company_id = c.id
+       WHERE LOWER(u.email) = $1 LIMIT 1`,
       [cleanEmail]
     );
+
     if (dupCheck.rows.length > 0) {
-      return sendError(res, 'Email quản trị này đã được đăng ký trên hệ thống', 400);
+      const existing = dupCheck.rows[0];
+      if (existing.company_status === 'ACTIVE') {
+        return sendError(res, 'Email quản trị này đã được đăng ký cho doanh nghiệp đang hoạt động trên hệ thống.', 400);
+      } else {
+        // If company is still PENDING, remove old pending company to allow re-checkout
+        await client.query(`DELETE FROM companies WHERE id = $1 AND status = 'PENDING'`, [existing.company_id]);
+      }
     }
 
     // Get Plan (Default to STARTER / 1.000.000 VNĐ)
@@ -339,6 +351,142 @@ export async function cancelOrder(req: Request, res: Response) {
     });
   } catch (err: any) {
     console.error('Cancel order error:', err);
+    return sendError(res, err.message || 'Server error', 500);
+  }
+}
+
+// ── EMAIL OTP VERIFICATION ──────────────────────────
+
+const otpStore = new Map<string, { code: string; expiresAt: number }>();
+
+const DISPOSABLE_DOMAINS = [
+  'mailinator.com',
+  '10minutemail.com',
+  'temp-mail.org',
+  'guerrillamail.com',
+  'dispostable.com',
+  'trashmail.com',
+  'yopmail.com',
+  'tempmail.com',
+  'getnada.com',
+];
+
+/**
+ * 6. POST /api/v1/public/send-otp
+ * Send 6-digit OTP code to email
+ */
+export async function sendOtpCode(req: Request, res: Response) {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return sendError(res, 'Vui lòng nhập địa chỉ Email', 400);
+    }
+
+    const cleanEmail = String(email).trim().toLowerCase();
+
+    // 1. Basic format validation
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(cleanEmail)) {
+      return sendError(res, 'Địa chỉ Email không đúng định dạng chuẩn (ví dụ: name@company.com)', 400);
+    }
+
+    // 2. Check disposable email domain
+    const domain = cleanEmail.split('@')[1];
+    if (DISPOSABLE_DOMAINS.includes(domain)) {
+      return sendError(res, 'Vui lòng sử dụng địa chỉ Email doanh nghiệp hoặc Gmail chính thức. Không hỗ trợ email ảo/tạm thời!', 400);
+    }
+
+    // 3. Check if email is ALREADY registered in database
+    const dupCheck = await pool.query(
+      `SELECT u.id, e.company_id, c.status as company_status
+       FROM user_accounts u
+       JOIN employees e ON u.employee_id = e.id
+       JOIN companies c ON e.company_id = c.id
+       WHERE LOWER(u.email) = $1 LIMIT 1`,
+      [cleanEmail]
+    );
+
+    if (dupCheck.rows.length > 0) {
+      const existing = dupCheck.rows[0];
+      if (existing.company_status === 'ACTIVE') {
+        return sendError(
+          res,
+          'Email này đã được đăng ký cho một Doanh nghiệp đang hoạt động trên hệ thống. Vui lòng sử dụng Email khác!',
+          400
+        );
+      }
+    }
+
+    // 3. Generate 6-digit numeric OTP code
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = Date.now() + 5 * 60 * 1000; // 5 minutes expiration
+
+    otpStore.set(cleanEmail, { code, expiresAt });
+
+    console.log(`[OTP VERIFICATION] Email: ${cleanEmail} | Generated OTP: ${code}`);
+
+    // 4. Send real OTP email via Gmail SMTP (if configured)
+    const emailSent = await sendOtpEmail({ to: cleanEmail, code });
+
+    return sendSuccess(
+      res,
+      {
+        email: cleanEmail,
+        emailSent,
+        otpDemo: emailSent ? undefined : code, // Only include demo badge if SMTP not configured yet
+        expiresInSeconds: 300,
+      },
+      emailSent
+        ? `Mã xác thực OTP 6 số đã được gửi tới hộp thư Gmail ${cleanEmail}. Vui lòng kiểm tra hộp thư!`
+        : `Mã OTP xác thực (${code}) đã được tạo cho ${cleanEmail}!`
+    );
+  } catch (err: any) {
+    console.error('Send OTP error:', err);
+    return sendError(res, err.message || 'Server error', 500);
+  }
+}
+
+/**
+ * 7. POST /api/v1/public/verify-otp
+ * Verify 6-digit OTP code
+ */
+export async function verifyOtpCode(req: Request, res: Response) {
+  try {
+    const { email, otp } = req.body;
+    if (!email || !otp) {
+      return sendError(res, 'Email và Mã OTP là bắt buộc', 400);
+    }
+
+    const cleanEmail = String(email).trim().toLowerCase();
+    const cleanOtp = String(otp).trim();
+
+    const record = otpStore.get(cleanEmail);
+    if (!record) {
+      return sendError(res, 'Mã OTP không tồn tại hoặc đã hết hạn. Vui lòng bấm "Gửi lại OTP"!', 400);
+    }
+
+    if (Date.now() > record.expiresAt) {
+      otpStore.delete(cleanEmail);
+      return sendError(res, 'Mã OTP đã quá thời hạn 5 phút. Vui lòng bấm "Gửi lại OTP"!', 400);
+    }
+
+    if (record.code !== cleanOtp) {
+      return sendError(res, 'Mã OTP không chính xác. Vui lòng kiểm tra lại 6 số!', 400);
+    }
+
+    // OTP verified successfully!
+    otpStore.delete(cleanEmail);
+
+    return sendSuccess(
+      res,
+      {
+        email: cleanEmail,
+        verified: true,
+      },
+      'Xác thực Email thành công 100%!'
+    );
+  } catch (err: any) {
+    console.error('Verify OTP error:', err);
     return sendError(res, err.message || 'Server error', 500);
   }
 }

@@ -5,11 +5,17 @@ import {
   checkOrderStatus,
   simulatePayment,
   cancelOrder,
+  sendOtpCode,
+  verifyOtpCode,
 } from '../controllers/checkout.controller';
 import { createCustomLead } from '../controllers/customLead.controller';
 import { getPublicReviews, createPublicReview, likePublicReview } from '../controllers/review.controller';
 
 const router = Router();
+
+// OTP Verification Routes
+router.post('/send-otp', sendOtpCode);
+router.post('/verify-otp', verifyOtpCode);
 
 // Checkout & Payment Endpoints (Public)
 router.post('/checkout', createCheckout);
