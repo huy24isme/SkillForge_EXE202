@@ -19,7 +19,8 @@ router.post('/verify-otp', verifyOtpCode);
 
 // Checkout & Payment Endpoints (Public)
 router.post('/checkout', createCheckout);
-router.post('/webhooks/payos', handlePayOSWebhook);
+router.all('/webhooks/payos', handlePayOSWebhook);
+router.all('/payos/webhook', handlePayOSWebhook);
 router.get('/orders/:orderCode/status', checkOrderStatus);
 router.post('/simulate-payment', simulatePayment);
 router.post('/orders/cancel', cancelOrder);
