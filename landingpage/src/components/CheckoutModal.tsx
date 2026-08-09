@@ -534,27 +534,19 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, p
                   </div>
                 )}
 
-                {/* Real Status Check & Dev Simulation Buttons */}
+                {/* Footer Controls */}
                 <div className="pt-2 border-t border-white/5 flex flex-col sm:flex-row justify-between items-center gap-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[11px] text-slate-500 font-mono">Mã đơn: {orderData.invoiceCode}</span>
-                    <button
-                      type="button"
-                      onClick={handleSimulatePaymentDev}
-                      className="text-[10px] text-slate-500 hover:text-amber-400 underline"
-                      title="Bấm để kích hoạt nhanh phục vụ Demo/Test"
-                    >
-                      (Demo Test)
-                    </button>
-                  </div>
+                  <span className="text-[11px] text-slate-500 font-mono">Mã đơn hàng: {orderData.invoiceCode}</span>
                   <button
                     type="button"
-                    onClick={handleCheckPayment}
-                    disabled={simulating}
-                    className="w-full sm:w-auto px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2"
+                    onClick={async () => {
+                      await handleCancelOrder();
+                      setError('Giao dịch đã được hủy bỏ.');
+                      setStep(1);
+                    }}
+                    className="px-4 py-2 bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-400 text-xs font-bold rounded-xl transition-all"
                   >
-                    {simulating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle className="w-3.5 h-3.5" />}
-                    Tôi đã chuyển khoản (Kiểm tra giao dịch)
+                    Hủy đơn giao dịch
                   </button>
                 </div>
               </div>
