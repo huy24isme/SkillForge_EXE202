@@ -119,7 +119,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, p
       } else {
         setOtpSent(true);
         if (json.data?.otpDemo) {
-          setOtpDemoMessage(`[Mô phỏng OTP Demo]: Mã OTP xác thực của bạn là: ${json.data.otpDemo}`);
+          setOtpDemoMessage(`Mã OTP xác thực của bạn là: ${json.data.otpDemo}`);
         }
       }
     } catch (err: any) {
@@ -401,12 +401,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, p
 
                 {/* OTP Sent Status Notification Banner */}
                 {otpSent && !otpVerified && (
-                  <div className="p-3.5 rounded-xl bg-[#3AE7E1]/10 border border-[#3AE7E1]/30 text-[#3AE7E1] text-xs font-semibold flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-base">📩</span>
-                      <span>Mã OTP 6 số đã được gửi tới Email <strong className="text-white">{adminEmail}</strong>. Vui lòng kiểm tra hộp thư!</span>
-                    </div>
-                    <span className="text-[10px] bg-[#3AE7E1]/20 px-2 py-1 rounded-md text-[#3AE7E1] font-sans font-medium whitespace-nowrap ml-2">Hạn 5 phút</span>
+                  <div className="p-3.5 rounded-xl bg-[#3AE7E1]/10 border border-[#3AE7E1]/30 text-[#3AE7E1] text-xs font-mono font-bold flex items-center justify-between">
+                    <span>{otpDemoMessage || `Mã OTP 6 số đã được gửi tới Email ${adminEmail}`}</span>
+                    <span className="text-[10px] bg-[#3AE7E1]/20 px-2 py-0.5 rounded text-white font-sans font-normal">Hạn 5 phút</span>
                   </div>
                 )}
 
