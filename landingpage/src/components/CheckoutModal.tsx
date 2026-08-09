@@ -399,6 +399,17 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, p
 
 
 
+                {/* OTP Sent Status Notification Banner */}
+                {otpSent && !otpVerified && (
+                  <div className="p-3.5 rounded-xl bg-[#3AE7E1]/10 border border-[#3AE7E1]/30 text-[#3AE7E1] text-xs font-semibold flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="text-base">📩</span>
+                      <span>Mã OTP 6 số đã được gửi tới Email <strong className="text-white">{adminEmail}</strong>. Vui lòng kiểm tra hộp thư!</span>
+                    </div>
+                    <span className="text-[10px] bg-[#3AE7E1]/20 px-2 py-1 rounded-md text-[#3AE7E1] font-sans font-medium whitespace-nowrap ml-2">Hạn 5 phút</span>
+                  </div>
+                )}
+
                 {/* OTP Verification Box */}
                 {otpSent && !otpVerified && (
                   <div className="p-4 rounded-xl bg-white/5 border border-[#3AE7E1]/30 space-y-3">
