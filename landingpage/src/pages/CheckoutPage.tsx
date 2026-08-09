@@ -714,10 +714,10 @@ export function CheckoutPage() {
                       type="button"
                       onClick={handleSimulatePayment}
                       disabled={simulating}
-                      className="w-1/2 sm:w-auto px-4 py-2 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 text-emerald-400 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-2"
+                      className="w-1/2 sm:w-auto px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2"
                     >
-                      {simulating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
-                      Giả lập Thanh toán (Test)
+                      {simulating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle className="w-3.5 h-3.5" />}
+                      Xác nhận tôi đã chuyển khoản thành công
                     </button>
                   </div>
                 </div>

@@ -561,17 +561,17 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, p
                   <span className="text-slate-300">Đang chờ hệ thống ngân hàng ghi nhận chuyển khoản...</span>
                 </div>
 
-                {/* Dev Mode Simulation Button */}
-                <div className="pt-2 border-t border-white/5 flex justify-between items-center">
-                  <span className="text-[11px] text-slate-500">Mã đơn: {orderData.invoiceCode}</span>
+                {/* Dev / Manual Confirmation Button */}
+                <div className="pt-2 border-t border-white/5 flex flex-col sm:flex-row justify-between items-center gap-3">
+                  <span className="text-[11px] text-slate-500 font-mono">Mã đơn hàng: {orderData.invoiceCode}</span>
                   <button
                     type="button"
                     onClick={handleSimulatePayment}
                     disabled={simulating}
-                    className="px-3 py-1.5 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 text-emerald-400 text-xs font-bold rounded-lg transition-colors flex items-center gap-1.5"
+                    className="w-full sm:w-auto px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2"
                   >
-                    {simulating ? <Loader2 className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
-                    Giả lập Thanh toán Thành công (Test Mode)
+                    {simulating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle className="w-3.5 h-3.5" />}
+                    Xác nhận tôi đã chuyển khoản thành công
                   </button>
                 </div>
               </div>
