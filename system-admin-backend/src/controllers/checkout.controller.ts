@@ -32,7 +32,9 @@ export async function createCheckout(req: Request, res: Response) {
 
     const cleanEmail = adminEmail.trim().toLowerCase();
 
-    // Check if email already registered
+    await client.query('BEGIN');
+
+    // 1. Check if email is registered to an ACTIVE paying company
     const dupCheck = await client.query(
       `SELECT u.id, e.company_id, c.status as company_status
        FROM user_accounts u
@@ -45,12 +47,23 @@ export async function createCheckout(req: Request, res: Response) {
     if (dupCheck.rows.length > 0) {
       const existing = dupCheck.rows[0];
       if (existing.company_status === 'ACTIVE') {
-        return sendError(res, 'Email quản trị này đã được đăng ký cho doanh nghiệp đang hoạt động trên hệ thống.', 400);
+        await client.query('ROLLBACK');
+        return sendError(res, 'Email quản trị này đã được đăng ký cho một doanh nghiệp đang hoạt động trên hệ thống.', 400);
       } else {
-        // If company is still PENDING, remove old pending company to allow re-checkout
-        await client.query(`DELETE FROM companies WHERE id = $1 AND status = 'PENDING'`, [existing.company_id]);
+        // Previous checkout was unpaid/cancelled (PENDING). Clean up all old records to allow fresh re-registration!
+        const oldCompId = existing.company_id;
+        await client.query(`DELETE FROM user_accounts WHERE LOWER(email) = $1`, [cleanEmail]);
+        if (oldCompId) {
+          await client.query(`DELETE FROM system_invoices WHERE company_id = $1`, [oldCompId]);
+          await client.query(`DELETE FROM employees WHERE company_id = $1`, [oldCompId]);
+          await client.query(`DELETE FROM departments WHERE company_id = $1`, [oldCompId]);
+          await client.query(`DELETE FROM companies WHERE id = $1 AND status != 'ACTIVE'`, [oldCompId]);
+        }
       }
     }
+
+    // Safety cleanup: Ensure no stray user_account with cleanEmail remains
+    await client.query(`DELETE FROM user_accounts WHERE LOWER(email) = $1`, [cleanEmail]);
 
     // Get Plan (Default to STARTER / 1.000.000 VNĐ)
     const targetPlanCode = (planCode || 'STARTER').toUpperCase();
@@ -69,8 +82,6 @@ export async function createCheckout(req: Request, res: Response) {
     const count = (countRes.rows[0].count || 0) + 1;
     const year = new Date().getFullYear();
     const invoiceCode = `SKF-${year}-${String(count).padStart(4, '0')}`;
-
-    await client.query('BEGIN');
 
     // 1. Create company (status PENDING until payment)
     const compRes = await client.query(
