@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, CheckCircle, Copy, Loader2, ShieldCheck, QrCode, ArrowRight, Sparkles, Building2, User, Mail, Phone, FileText } from 'lucide-react';
+import { X, CheckCircle, Copy, Loader2, ShieldCheck, QrCode, ArrowRight, Sparkles, Building2, User, Mail, Phone, FileText, ExternalLink } from 'lucide-react';
 
 interface CheckoutModalProps {
   isOpen: boolean;
@@ -440,7 +440,13 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, p
                   {/* QR Image */}
                   <div className="flex flex-col items-center justify-center p-3 bg-white rounded-xl shadow-xl">
                     <img
-                      src={orderData.qrCodeUrl}
+                      src={
+                        !orderData.qrCodeUrl
+                          ? `https://img.vietqr.io/image/MB-0932556236-compact2.png?amount=${orderData.amount || 1000000}&addInfo=${encodeURIComponent(orderData.description || 'SKF')}&accountName=NGUYEN%20MINH%20HUY`
+                          : orderData.qrCodeUrl.startsWith('http://') || orderData.qrCodeUrl.startsWith('https://')
+                          ? orderData.qrCodeUrl
+                          : `https://quickchart.io/qr?text=${encodeURIComponent(orderData.qrCodeUrl)}&size=300`
+                      }
                       alt="VietQR Payment Code"
                       className="w-48 h-48 object-contain"
                       onError={(e) => {
@@ -500,6 +506,19 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, p
                     </div>
                   </div>
                 </div>
+
+                {/* PayOS Official Checkout Link Button */}
+                {orderData.checkoutUrl && (
+                  <a
+                    href={orderData.checkoutUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-2.5 px-4 bg-gradient-to-r from-blue-600/30 to-indigo-600/30 hover:from-blue-600/40 hover:to-indigo-600/40 border border-blue-500/40 text-blue-300 font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg"
+                  >
+                    <span>Mở Cổng Thanh Toán PayOS (Napas 247)</span>
+                    <ExternalLink className="w-3.5 h-3.5 text-blue-400" />
+                  </a>
+                )}
 
                 {/* Status Indicator */}
                 <div className="flex items-center justify-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10 text-xs">

@@ -18,7 +18,8 @@ import {
   Lock,
   Zap,
   Award,
-  Clock
+  Clock,
+  ExternalLink,
 } from 'lucide-react';
 import logo from '../assets/logo1.png';
 
@@ -102,6 +103,46 @@ export function CheckoutPage() {
       if (timer) clearInterval(timer);
     };
   }, [step, countdown, orderData]);
+
+  // Handle ReturnUrl parameters from PayOS Checkout Redirect (Step 4 of PayOS Flow)
+  useEffect(() => {
+    const statusParam = searchParams.get('status');
+    const codeParam = searchParams.get('code');
+    const orderCodeParam = searchParams.get('orderCode');
+    const cancelParam = searchParams.get('cancel');
+
+    if (statusParam === 'PAID' || codeParam === '00' || (cancelParam === 'false' && orderCodeParam)) {
+      if (orderCodeParam) {
+        fetch(`${API_BASE}/orders/${orderCodeParam}/status`)
+          .then((res) => res.json())
+          .then((json) => {
+            if (json.success && json.data) {
+              setOrderData({
+                orderCode: json.data.orderCode || Number(orderCodeParam),
+                invoiceCode: json.data.invoiceCode || `SKF-2026-${orderCodeParam}`,
+                amount: json.data.amount || 1000000,
+                companyName: json.data.companyName || 'Doanh nghiệp',
+                adminEmail: json.data.adminEmail || '',
+                checkoutUrl: '',
+                qrCodeUrl: '',
+                accountNo: '0932556236',
+                accountName: 'NGUYEN MINH HUY',
+                bankName: 'MBBank',
+                description: `SKF ${json.data.invoiceCode || orderCodeParam}`,
+              });
+              setStep(3);
+            } else {
+              setStep(3);
+            }
+          })
+          .catch(() => {
+            setStep(3);
+          });
+      } else {
+        setStep(3);
+      }
+    }
+  }, [searchParams]);
 
   // Polling for Payment Completion on Step 2
   useEffect(() => {
@@ -576,7 +617,13 @@ export function CheckoutPage() {
                   {/* QR Image Box */}
                   <div className="flex flex-col items-center justify-center p-4 bg-white rounded-2xl shadow-2xl relative group">
                     <img
-                      src={orderData.qrCodeUrl}
+                      src={
+                        !orderData.qrCodeUrl
+                          ? `https://img.vietqr.io/image/MB-0932556236-compact2.png?amount=${orderData.amount || 1000000}&addInfo=${encodeURIComponent(orderData.description || 'SKF')}&accountName=NGUYEN%20MINH%20HUY`
+                          : orderData.qrCodeUrl.startsWith('http://') || orderData.qrCodeUrl.startsWith('https://')
+                          ? orderData.qrCodeUrl
+                          : `https://quickchart.io/qr?text=${encodeURIComponent(orderData.qrCodeUrl)}&size=300`
+                      }
                       alt="VietQR Code"
                       className="w-52 h-52 object-contain"
                       onError={(e) => {
@@ -634,6 +681,19 @@ export function CheckoutPage() {
                     </div>
                   </div>
                 </div>
+
+                {/* PayOS Official Checkout Link Button */}
+                {orderData.checkoutUrl && (
+                  <a
+                    href={orderData.checkoutUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-3 px-4 bg-gradient-to-r from-blue-600/30 to-indigo-600/30 hover:from-blue-600/40 hover:to-indigo-600/40 border border-blue-500/40 text-blue-300 font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg"
+                  >
+                    <span>Mở Cổng Thanh Toán PayOS (Napas 247)</span>
+                    <ExternalLink className="w-4 h-4 text-blue-400" />
+                  </a>
+                )}
 
                 {/* Real-time Indicator */}
                 <div className="flex items-center justify-center gap-3 p-4 rounded-2xl bg-white/5 border border-white/10 text-xs">

@@ -129,11 +129,14 @@ export async function createCheckout(req: Request, res: Response) {
 
     await client.query('COMMIT');
 
-    // 6. Generate VietQR / PayOS link
+    // 6. Generate VietQR / PayOS link with dynamic returnUrl/cancelUrl
+    const origin = req.headers.origin || 'https://skill-forge-exe-202-119a.vercel.app';
     const payResult = await payosService.createPaymentLink({
       orderCode,
       amount,
       description,
+      returnUrl: `${origin}/checkout?status=PAID&orderCode=${orderCode}&code=00`,
+      cancelUrl: `${origin}/checkout?status=CANCELLED&orderCode=${orderCode}`,
     });
 
     return sendSuccess(res, {
