@@ -433,12 +433,11 @@ export async function sendOtpCode(req: Request, res: Response) {
       {
         email: cleanEmail,
         emailSent,
-        otpDemo: emailSent ? undefined : code, // Only include demo badge if SMTP not configured yet
         expiresInSeconds: 300,
       },
       emailSent
         ? `Mã xác thực OTP 6 số đã được gửi tới hộp thư Gmail ${cleanEmail}. Vui lòng kiểm tra hộp thư!`
-        : `Mã OTP xác thực (${code}) đã được tạo cho ${cleanEmail}!`
+        : `Mã OTP xác thực đã được gửi tới ${cleanEmail}. Vui lòng kiểm tra hộp thư!`
     );
   } catch (err: any) {
     console.error('Send OTP error:', err);

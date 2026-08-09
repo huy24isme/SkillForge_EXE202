@@ -534,13 +534,7 @@ export function CheckoutPage() {
                   </div>
                 </div>
 
-                {/* OTP Demo Banner Notification */}
-                {otpDemoMessage && !otpVerified && (
-                  <div className="p-3.5 rounded-xl bg-[#3AE7E1]/10 border border-[#3AE7E1]/30 text-[#3AE7E1] text-xs font-mono font-bold flex items-center justify-between animate-pulse">
-                    <span>{otpDemoMessage}</span>
-                    <span className="text-[10px] bg-[#3AE7E1]/20 px-2 py-0.5 rounded text-white font-sans font-normal">Hạn 5 phút</span>
-                  </div>
-                )}
+
 
                 {/* OTP Verification Box */}
                 {otpSent && !otpVerified && (
