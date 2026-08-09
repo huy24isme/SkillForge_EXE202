@@ -180,13 +180,25 @@ export async function handlePayOSWebhook(req: Request, res: Response) {
 
     console.log(`[PAYOS REAL PAYMENT DETECTED] OrderCode: ${orderCode} | Description: ${description}`);
 
-    // Find invoice by orderCode OR description
+    // Find invoice by orderCode OR description OR invoiceCode match
     const invRes = await pool.query(
       `SELECT i.*, c.name as company_name 
        FROM system_invoices i
        JOIN companies c ON i.company_id = c.id
-       WHERE i.note LIKE $1 OR i.invoice_code = $2 OR i.note LIKE $3 OR i.note LIKE $4 LIMIT 1`,
-      [`%ORDER_CODE:${orderCode}%`, String(orderCode), `%${orderCode}%`, `%${description}%`]
+       WHERE i.note LIKE $1 
+          OR i.invoice_code = $2 
+          OR i.note LIKE $3 
+          OR i.note LIKE $4
+          OR $5 LIKE '%' || i.invoice_code || '%'
+          OR i.invoice_code = REPLACE($5, 'SKF ', '')
+       LIMIT 1`,
+      [
+        `%ORDER_CODE:${orderCode}%`,
+        String(orderCode),
+        `%${orderCode}%`,
+        `%${description}%`,
+        String(description || orderCode),
+      ]
     );
 
     if (invRes.rows.length === 0) {
