@@ -540,7 +540,15 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({ isOpen, onClose, p
                   <button
                     type="button"
                     onClick={async () => {
-                      await handleCancelOrder();
+                      if (orderData?.orderCode) {
+                        try {
+                          await fetch(`${API_BASE}/orders/cancel`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ orderCode: orderData.orderCode }),
+                          });
+                        } catch {}
+                      }
                       setError('Giao dịch đã được hủy bỏ.');
                       setStep(1);
                     }}
