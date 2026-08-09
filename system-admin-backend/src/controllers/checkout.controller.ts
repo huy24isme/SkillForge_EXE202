@@ -167,28 +167,30 @@ export async function handlePayOSWebhook(req: Request, res: Response) {
     const body = req.body || {};
     console.log('Received PayOS Webhook:', JSON.stringify(body));
 
-    // Handle PayOS test ping / verification ping
-    if (!body || Object.keys(body).length === 0 || body.event === 'TEST' || body.code === '00' && !body.data?.orderCode) {
+    // Extract orderCode and transaction data from PayOS payload
+    const data = body.data || body;
+    const orderCode = data?.orderCode || data?.order_code || body?.orderCode || body?.order_code;
+    const description = data?.description || body?.description || '';
+
+    // Handle PayOS test ping / verification ping (Only if no orderCode is provided)
+    if ((!orderCode && !description) || body.event === 'TEST' || Object.keys(body).length === 0) {
+      console.log('[PAYOS WEBHOOK PING] Handled test ping or empty request');
       return res.status(200).json({ error: 0, message: 'Webhook test ping received successfully', data: null });
     }
 
-    const data = body.data || body;
-    const orderCode = data.orderCode || data.order_code;
+    console.log(`[PAYOS REAL PAYMENT DETECTED] OrderCode: ${orderCode} | Description: ${description}`);
 
-    if (!orderCode) {
-      return res.status(200).json({ error: 0, message: 'No orderCode provided', data: null });
-    }
-
-    // Find invoice by orderCode
+    // Find invoice by orderCode OR description
     const invRes = await pool.query(
       `SELECT i.*, c.name as company_name 
        FROM system_invoices i
        JOIN companies c ON i.company_id = c.id
-       WHERE i.note LIKE $1 OR i.invoice_code = $2 LIMIT 1`,
-      [`%ORDER_CODE:${orderCode}%`, String(orderCode)]
+       WHERE i.note LIKE $1 OR i.invoice_code = $2 OR i.note LIKE $3 OR i.note LIKE $4 LIMIT 1`,
+      [`%ORDER_CODE:${orderCode}%`, String(orderCode), `%${orderCode}%`, `%${description}%`]
     );
 
     if (invRes.rows.length === 0) {
+      console.warn(`[PAYOS WEBHOOK WARNING] Invoice not found for orderCode: ${orderCode}`);
       return res.status(200).json({ error: 0, message: 'Invoice not found for orderCode: ' + orderCode, data: null });
     }
 
@@ -216,6 +218,8 @@ export async function handlePayOSWebhook(req: Request, res: Response) {
       `Đơn hàng ${invoice.invoice_code} (${invoice.company_name}) - ${invoice.amount} VNĐ`,
       req.ip || '127.0.0.1'
     );
+
+    console.log(`[PAYOS REAL PAYMENT SUCCESS] Successfully activated company ${invoice.company_name} for invoice ${invoice.invoice_code}`);
 
     return res.status(200).json({ error: 0, message: 'Success', data: { invoiceCode: invoice.invoice_code } });
   } catch (err: any) {
