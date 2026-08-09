@@ -230,7 +230,26 @@ export function CheckoutPage() {
     }
   };
 
-  const handleSimulatePayment = async () => {
+  const handleCheckPayment = async () => {
+    if (!orderData) return;
+    setSimulating(true);
+    setError(null);
+    try {
+      const res = await fetch(`${API_BASE}/orders/${orderData.orderCode}/status`);
+      const json = await res.json();
+      if (json.success && json.data?.status === 'SUCCESS') {
+        setStep(3);
+      } else {
+        setError(`⏳ Chưa ghi nhận giao dịch chuyển khoản cho đơn hàng ${orderData.invoiceCode}. Nếu bạn vừa quét mã chuyển khoản, vui lòng chờ trong giây lát (khoảng 30 giây) để ngân hàng đối soát!`);
+      }
+    } catch {
+      setError('Lỗi kết nối khi kiểm tra trạng thái thanh toán.');
+    } finally {
+      setSimulating(false);
+    }
+  };
+
+  const handleSimulatePaymentDev = async () => {
     if (!orderData) return;
     setSimulating(true);
     try {
@@ -620,12 +639,20 @@ export function CheckoutPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={handleSimulatePayment}
+                      onClick={handleSimulatePaymentDev}
+                      className="text-[10px] text-slate-500 hover:text-amber-400 underline px-2"
+                      title="Bấm để kích hoạt nhanh phục vụ Demo/Test"
+                    >
+                      (Demo Test)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleCheckPayment}
                       disabled={simulating}
-                      className="w-1/2 sm:w-auto px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2"
+                      className="px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2"
                     >
                       {simulating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle className="w-3.5 h-3.5" />}
-                      Xác nhận tôi đã chuyển khoản thành công
+                      Tôi đã chuyển khoản (Kiểm tra giao dịch)
                     </button>
                   </div>
                 </div>
