@@ -74,8 +74,10 @@ export async function createCheckout(req: Request, res: Response) {
     const plan = planRes.rows[0];
     const amount = 1000000; // Fixed 1.000.000 VNĐ for Basic plan as requested
 
-    // Generate unique positive numeric orderCode for PayOS (max 9007199254740991)
-    const orderCode = Math.floor(100000 + Math.random() * 900000); // 6-digit number
+    // Generate unique positive numeric orderCode for PayOS (9-digit unique integer: 6-digit timestamp + 3-digit random)
+    const timePart = String(Date.now()).slice(-6);
+    const randomPart = String(Math.floor(100 + Math.random() * 900));
+    const orderCode = Number(timePart + randomPart);
 
     // Generate Invoice Code: SKF-2026-XXXX
     const countRes = await client.query(`SELECT COUNT(*)::int as count FROM system_invoices`);
