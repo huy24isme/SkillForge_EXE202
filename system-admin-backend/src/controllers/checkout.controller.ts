@@ -5,6 +5,7 @@ import { sendSuccess, sendError } from '../utils/response';
 import { payosService } from '../services/payos.service';
 import { writeAuditLog } from '../services/auditLog.service';
 import { sendOtpEmail } from '../services/email.service';
+import { generateUniqueInvoiceCode } from '../utils/invoiceCode';
 
 /**
  * 1. POST /api/v1/public/checkout
@@ -79,11 +80,8 @@ export async function createCheckout(req: Request, res: Response) {
     const randomPart = String(Math.floor(100 + Math.random() * 900));
     const orderCode = Number(timePart + randomPart);
 
-    // Generate Invoice Code: SKF-2026-XXXX
-    const countRes = await client.query(`SELECT COUNT(*)::int as count FROM system_invoices`);
-    const count = (countRes.rows[0].count || 0) + 1;
-    const year = new Date().getFullYear();
-    const invoiceCode = `SKF-${year}-${String(count).padStart(4, '0')}`;
+    // Generate Invoice Code: SKF-2026-XXXX (Guaranteed 100% Unique)
+    const invoiceCode = await generateUniqueInvoiceCode(client);
 
     // 1. Create company (status PENDING until payment)
     const compRes = await client.query(

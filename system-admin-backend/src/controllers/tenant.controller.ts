@@ -4,6 +4,7 @@ import { pool } from '../config/db';
 import { sendSuccess, sendError } from '../utils/response';
 import { AuthenticatedAdminRequest } from '../middleware/auth';
 import { writeAuditLog } from '../services/auditLog.service';
+import { generateUniqueInvoiceCode } from '../utils/invoiceCode';
 
 async function mapTenantRow(company: any) {
   // Get plan info from latest invoice
@@ -157,10 +158,7 @@ export async function createTenant(req: AuthenticatedAdminRequest, res: Response
     const invoiceCycle = (cycle || 'MONTHLY').toUpperCase() === 'YEARLY' ? 'YEARLY' : 'MONTHLY';
     const amount = invoiceCycle === 'YEARLY' ? plan.yearly_price : plan.monthly_price;
 
-    const countRes = await client.query(`SELECT COUNT(*)::int as count FROM system_invoices`);
-    const count = (countRes.rows[0].count || 0) + 1;
-    const year = new Date().getFullYear();
-    const invoiceCode = `SKF-${year}-${String(count).padStart(4, '0')}`;
+    const invoiceCode = await generateUniqueInvoiceCode(client);
 
     await client.query(
       `INSERT INTO system_invoices (id, invoice_code, company_id, plan_id, cycle, amount, payment_method, status, created_at, updated_at)

@@ -3,6 +3,7 @@ import { pool } from '../config/db';
 import { sendSuccess, sendError } from '../utils/response';
 import { AuthenticatedAdminRequest } from '../middleware/auth';
 import { writeAuditLog } from '../services/auditLog.service';
+import { generateUniqueInvoiceCode } from '../utils/invoiceCode';
 
 /**
  * 1. Public Endpoint: Create Custom Plan Consultation Request
@@ -157,10 +158,7 @@ export async function updateCustomLeadStatus(req: AuthenticatedAdminRequest, res
         planId = fallbackPlan.rows[0]?.id;
       }
 
-      const countRes = await pool.query(`SELECT COUNT(*)::int as count FROM system_invoices`);
-      const count = (countRes.rows[0].count || 0) + 1;
-      const year = new Date().getFullYear();
-      const invoiceCode = `SKF-${year}-${String(count).padStart(4, '0')}`;
+      const invoiceCode = await generateUniqueInvoiceCode(pool);
 
       await pool.query(
         `INSERT INTO system_invoices 
