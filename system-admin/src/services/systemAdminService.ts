@@ -228,6 +228,8 @@ export const systemAdminService = {
     return mapInvoiceDto(dto);
   },
 
+  deleteInvoice: (id: string): Promise<void> => api.delete(`/sa/invoices/${id}`),
+
   // KPI Templates
   getKpis: async (): Promise<KpiTemplate[]> => {
     const dtos: KpiTemplateDto[] = await api.get('/sa/templates/kpi');

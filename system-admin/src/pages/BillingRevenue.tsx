@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
-import { Search, Filter, CreditCard, Wallet, ArrowUpRight, TrendingUp } from 'lucide-react';
+import { Search, Filter, CreditCard, Wallet, ArrowUpRight, TrendingUp, Trash2 } from 'lucide-react';
 import { Invoice } from '../types';
 
 interface BillingRevenueProps {
   invoices: Invoice[];
   onUpdateInvoiceStatus?: (id: string, status: 'success' | 'pending' | 'failed') => void;
+  onDeleteInvoice?: (id: string) => void;
 }
 
 const formatVND = (value: number) => {
   return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
 };
 
-export const BillingRevenue: React.FC<BillingRevenueProps> = ({ invoices, onUpdateInvoiceStatus }) => {
+export const BillingRevenue: React.FC<BillingRevenueProps> = ({ invoices, onUpdateInvoiceStatus, onDeleteInvoice }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('All');
   const [methodFilter, setMethodFilter] = useState<string>('All');
@@ -180,7 +181,8 @@ export const BillingRevenue: React.FC<BillingRevenueProps> = ({ invoices, onUpda
                 <th className="px-6 py-4">Số tiền</th>
                 <th className="px-6 py-4">Phương thức</th>
                 <th className="px-6 py-4">Ngày giao dịch</th>
-                <th className="px-6 py-4 text-right">Trạng thái</th>
+                <th className="px-6 py-4 text-center">Trạng thái</th>
+                <th className="px-6 py-4 text-right">Thao tác</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -216,7 +218,7 @@ export const BillingRevenue: React.FC<BillingRevenueProps> = ({ invoices, onUpda
                     <td className="px-6 py-4 text-slate-400">
                       {inv.createdAt}
                     </td>
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-6 py-4 text-center">
                       {onUpdateInvoiceStatus ? (
                         <select
                           value={inv.status}
@@ -245,11 +247,22 @@ export const BillingRevenue: React.FC<BillingRevenueProps> = ({ invoices, onUpda
                         </span>
                       )}
                     </td>
+                    <td className="px-6 py-4 text-right">
+                      {onDeleteInvoice && (
+                        <button
+                          onClick={() => onDeleteInvoice(inv.id)}
+                          className="p-1.5 hover:bg-rose-50 text-slate-400 hover:text-rose-600 rounded-lg transition-colors border border-transparent hover:border-rose-200"
+                          title="Xóa giao dịch này"
+                        >
+                          <Trash2 className="w-4 h-4 text-rose-500" />
+                        </button>
+                      )}
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={8} className="px-6 py-12 text-center text-slate-400">
+                  <td colSpan={9} className="px-6 py-12 text-center text-slate-400">
                     Không tìm thấy hóa đơn lịch sử thanh toán nào.
                   </td>
                 </tr>

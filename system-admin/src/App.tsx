@@ -28,6 +28,7 @@ export const App: React.FC = () => {
     handleAddKpi,
     handleAddBsc,
     handleUpdateInvoiceStatus,
+    handleDeleteInvoice,
     handleUpdateCustomLeadStatus,
     handleDeleteCustomLead,
   } = useSystemAdmin();
@@ -109,7 +110,7 @@ export const App: React.FC = () => {
           />
         );
       case 'billing':
-        return <BillingRevenue invoices={invoices} onUpdateInvoiceStatus={handleUpdateInvoiceStatus} />;
+        return <BillingRevenue invoices={invoices} onUpdateInvoiceStatus={handleUpdateInvoiceStatus} onDeleteInvoice={handleDeleteInvoice} />;
       case 'reviews':
         return <ReviewManagement />;
       case 'templates':

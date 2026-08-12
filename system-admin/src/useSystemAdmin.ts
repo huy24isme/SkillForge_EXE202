@@ -203,6 +203,22 @@ export const useSystemAdmin = () => {
     }
   };
 
+  const handleDeleteInvoice = async (id: string) => {
+    if (!window.confirm('Bạn có chắc chắn muốn xóa lịch sử giao dịch/hóa đơn này khỏi hệ thống? Dữ liệu công ty chờ tương ứng (nếu chưa kích hoạt) cũng sẽ được dọn dẹp.')) return;
+    try {
+      await systemAdminService.deleteInvoice(id);
+      setInvoices(prev => prev.filter(inv => inv.id !== id));
+      const [updatedTenants, updatedLogs] = await Promise.all([
+        systemAdminService.getTenants(),
+        systemAdminService.getAuditLogs()
+      ]);
+      setTenants(updatedTenants);
+      setAuditLogs(updatedLogs);
+    } catch (err: any) {
+      alert('Không thể xóa hóa đơn giao dịch: ' + err.message);
+    }
+  };
+
   return {
     isLoggedIn,
     loading,
@@ -222,6 +238,7 @@ export const useSystemAdmin = () => {
     handleAddKpi,
     handleAddBsc,
     handleUpdateInvoiceStatus,
+    handleDeleteInvoice,
     handleUpdateCustomLeadStatus,
     handleDeleteCustomLead
   };
