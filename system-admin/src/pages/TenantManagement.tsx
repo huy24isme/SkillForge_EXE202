@@ -56,6 +56,7 @@ export const TenantManagement: React.FC<TenantManagementProps> = ({
   const [newTenant, setNewTenant] = useState({
     name: '',
     packageType: 'Basic' as Tenant['packageType'],
+    size: '10-50',
     employeeCount: 10,
     adminName: '',
     adminEmail: '',
@@ -73,6 +74,7 @@ export const TenantManagement: React.FC<TenantManagementProps> = ({
     setNewTenant({
       name: '',
       packageType: 'Basic',
+      size: '10-50',
       employeeCount: 10,
       adminName: '',
       adminEmail: '',
@@ -199,7 +201,7 @@ export const TenantManagement: React.FC<TenantManagementProps> = ({
                     <th className="px-6 py-4">Tên Doanh nghiệp</th>
                     <th className="px-6 py-4">Ngày đăng ký</th>
                     <th className="px-6 py-4">Gói đang dùng</th>
-                    <th className="px-6 py-4 text-center">Số lượng nhân sự</th>
+                    <th className="px-6 py-4 text-center">Quy mô Nhân sự</th>
                     <th className="px-6 py-4">Trạng thái</th>
                     <th className="px-6 py-4 text-right">Thao tác</th>
                   </tr>
@@ -232,7 +234,7 @@ export const TenantManagement: React.FC<TenantManagementProps> = ({
                           </span>
                         </td>
                         <td className="px-6 py-4.5 text-center font-semibold text-slate-700">
-                          {tenant.employeeCount.toLocaleString()}
+                          {tenant.size ? (tenant.size.includes('nhân sự') ? tenant.size : `${tenant.size} nhân sự`) : `${tenant.employeeCount} nhân sự`}
                         </td>
                         <td className="px-6 py-4.5">
                           <select
@@ -751,8 +753,10 @@ export const TenantManagement: React.FC<TenantManagementProps> = ({
                   <span className="font-bold text-blue-600">{showDetailModal.packageType}</span>
                 </div>
                 <div className="flex justify-between py-2 border-b border-slate-100">
-                  <span className="text-slate-400">Giới hạn xử lý nhân sự</span>
-                  <span className="font-semibold text-slate-900">{showDetailModal.employeeCount.toLocaleString()} tài khoản</span>
+                  <span className="text-slate-400">Quy mô nhân sự</span>
+                  <span className="font-semibold text-slate-900">
+                    {showDetailModal.size ? (showDetailModal.size.includes('nhân sự') ? showDetailModal.size : `${showDetailModal.size} nhân sự`) : `${showDetailModal.employeeCount} nhân sự`}
+                  </span>
                 </div>
               </div>
             </div>
@@ -885,13 +889,18 @@ export const TenantManagement: React.FC<TenantManagementProps> = ({
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700">Giới hạn nhân sự</label>
-                  <input
-                    type="number"
-                    value={newTenant.employeeCount}
-                    onChange={e => setNewTenant({ ...newTenant, employeeCount: parseInt(e.target.value) || 0 })}
+                  <label className="text-xs font-semibold text-slate-700">Quy mô nhân sự</label>
+                  <select
+                    value={newTenant.size}
+                    onChange={e => setNewTenant({ ...newTenant, size: e.target.value })}
                     className="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500"
-                  />
+                  >
+                    <option value="1-10">1 - 10 nhân sự</option>
+                    <option value="10-50">10 - 50 nhân sự</option>
+                    <option value="50-100">50 - 100 nhân sự</option>
+                    <option value="100-500">100 - 500 nhân sự</option>
+                    <option value="500+">Trên 500 nhân sự</option>
+                  </select>
                 </div>
               </div>
 

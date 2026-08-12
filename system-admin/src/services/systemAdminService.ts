@@ -103,6 +103,9 @@ export function mapTenantDto(dto: TenantDto): Tenant {
   return {
     id: dto.id,
     name: dto.name,
+    taxCode: dto.taxCode,
+    industry: dto.industry,
+    size: dto.size,
     registeredAt: dto.createdAt ? dto.createdAt.split('T')[0] : new Date().toISOString().split('T')[0],
     packageType: mapPlanCodeToPackageType(dto.planCode),
     employeeCount: dto.employeeCount,
@@ -190,9 +193,9 @@ export const systemAdminService = {
   createTenant: async (data: Omit<Tenant, 'id' | 'registeredAt'> & { planId: string; adminPassword?: string }): Promise<Tenant> => {
     const reqBody = {
       companyName: data.name,
-      taxCode: '',
-      industry: 'Công nghệ',
-      size: '50-100',
+      taxCode: data.taxCode || '',
+      industry: data.industry || 'Công nghệ',
+      size: data.size || '10-50',
       planId: data.planId,
       adminName: data.adminName,
       adminEmail: data.adminEmail,

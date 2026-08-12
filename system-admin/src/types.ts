@@ -1,6 +1,9 @@
 export interface Tenant {
   id: string;
   name: string;
+  taxCode?: string;
+  industry?: string;
+  size?: string;
   logo?: string;
   registeredAt: string;
   packageType: 'Basic' | 'Custom' | 'Starter' | 'Growth' | 'Enterprise';

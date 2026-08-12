@@ -177,7 +177,6 @@ export const BillingRevenue: React.FC<BillingRevenueProps> = ({ invoices, onUpda
                 <th className="px-6 py-4">Mã hóa đơn</th>
                 <th className="px-6 py-4">Tên Doanh nghiệp</th>
                 <th className="px-6 py-4">Gói dịch vụ</th>
-                <th className="px-6 py-4">Chu kỳ</th>
                 <th className="px-6 py-4">Số tiền</th>
                 <th className="px-6 py-4">Phương thức</th>
                 <th className="px-6 py-4">Ngày giao dịch</th>
@@ -203,9 +202,6 @@ export const BillingRevenue: React.FC<BillingRevenueProps> = ({ invoices, onUpda
                       }`}>
                         {inv.packageType === 'Custom' || inv.packageType === 'Enterprise' || inv.packageType === 'Growth' ? 'Gói Tùy Chỉnh' : 'Gói Cơ Bản'}
                       </span>
-                    </td>
-                    <td className="px-6 py-4 text-slate-500">
-                      {inv.cycle === 'yearly' ? 'Hàng năm' : 'Hàng tháng'}
                     </td>
                     <td className="px-6 py-4 font-black text-slate-900">
                       {formatVND(inv.amount)}
@@ -262,7 +258,7 @@ export const BillingRevenue: React.FC<BillingRevenueProps> = ({ invoices, onUpda
                 ))
               ) : (
                 <tr>
-                  <td colSpan={9} className="px-6 py-12 text-center text-slate-400">
+                  <td colSpan={8} className="px-6 py-12 text-center text-slate-400">
                     Không tìm thấy hóa đơn lịch sử thanh toán nào.
                   </td>
                 </tr>
