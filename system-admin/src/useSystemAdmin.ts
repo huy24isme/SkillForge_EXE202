@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Tenant, Invoice, KpiTemplate, BscTemplate, AuditLog, CustomLead } from './types';
+import { Tenant, Invoice, KpiTemplate, BscTemplate, AuditLog, CustomLead, TrafficAnalytics } from './types';
 import { systemAdminService, PlanDto } from './services/systemAdminService';
 
 export const useSystemAdmin = () => {
@@ -15,6 +15,7 @@ export const useSystemAdmin = () => {
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
   const [plans, setPlans] = useState<PlanDto[]>([]);
   const [customLeads, setCustomLeads] = useState<CustomLead[]>([]);
+  const [trafficAnalytics, setTrafficAnalytics] = useState<TrafficAnalytics | null>(null);
 
   // Check login on mount
   useEffect(() => {
@@ -36,14 +37,15 @@ export const useSystemAdmin = () => {
     setLoading(true);
     setError(null);
     try {
-      const [tenantsRes, invoicesRes, kpisRes, bscsRes, auditLogsRes, plansRes, customLeadsRes] = await Promise.all([
+      const [tenantsRes, invoicesRes, kpisRes, bscsRes, auditLogsRes, plansRes, customLeadsRes, trafficRes] = await Promise.all([
         systemAdminService.getTenants(),
         systemAdminService.getInvoices(),
         systemAdminService.getKpis(),
         systemAdminService.getBscs(),
         systemAdminService.getAuditLogs(),
         systemAdminService.getPlans(),
-        systemAdminService.getCustomLeads()
+        systemAdminService.getCustomLeads(),
+        systemAdminService.getTrafficAnalytics().catch(() => null)
       ]);
 
       setTenants(tenantsRes);
@@ -53,6 +55,7 @@ export const useSystemAdmin = () => {
       setAuditLogs(auditLogsRes);
       setPlans(plansRes);
       setCustomLeads(customLeadsRes);
+      if (trafficRes) setTrafficAnalytics(trafficRes);
     } catch (err: any) {
       console.error('Failed to load system data:', err);
       setError(err?.message || 'Không thể đồng bộ dữ liệu hệ thống.');
@@ -219,6 +222,16 @@ export const useSystemAdmin = () => {
     }
   };
 
+  const handleSimulateTrafficVisit = async (platform: string) => {
+    try {
+      await systemAdminService.simulateTrafficVisit(platform, 25);
+      const updatedTraffic = await systemAdminService.getTrafficAnalytics();
+      setTrafficAnalytics(updatedTraffic);
+    } catch {
+      // ignore
+    }
+  };
+
   return {
     isLoggedIn,
     loading,
@@ -230,6 +243,7 @@ export const useSystemAdmin = () => {
     auditLogs,
     plans,
     customLeads,
+    trafficAnalytics,
     login,
     logout,
     fetchAllData,
@@ -240,7 +254,8 @@ export const useSystemAdmin = () => {
     handleUpdateInvoiceStatus,
     handleDeleteInvoice,
     handleUpdateCustomLeadStatus,
-    handleDeleteCustomLead
+    handleDeleteCustomLead,
+    handleSimulateTrafficVisit,
   };
 };
 

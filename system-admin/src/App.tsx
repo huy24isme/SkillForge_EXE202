@@ -21,6 +21,7 @@ export const App: React.FC = () => {
     bscs,
     auditLogs,
     customLeads,
+    trafficAnalytics,
     login,
     logout,
     handleUpdateTenantStatus,
@@ -31,6 +32,7 @@ export const App: React.FC = () => {
     handleDeleteInvoice,
     handleUpdateCustomLeadStatus,
     handleDeleteCustomLead,
+    handleSimulateTrafficVisit,
   } = useSystemAdmin();
 
   // App state
@@ -97,7 +99,7 @@ export const App: React.FC = () => {
 
     switch (activeTab) {
       case 'overview':
-        return <DashboardOverview tenants={tenants} invoices={invoices} />;
+        return <DashboardOverview tenants={tenants} invoices={invoices} trafficAnalytics={trafficAnalytics} onSimulateTraffic={handleSimulateTrafficVisit} />;
       case 'tenants':
         return (
           <TenantManagement 
@@ -125,7 +127,7 @@ export const App: React.FC = () => {
       case 'settings':
         return <SettingsPage auditLogs={auditLogs} />;
       default:
-        return <DashboardOverview tenants={tenants} invoices={invoices} />;
+        return <DashboardOverview tenants={tenants} invoices={invoices} trafficAnalytics={trafficAnalytics} onSimulateTraffic={handleSimulateTrafficVisit} />;
     }
   };
 

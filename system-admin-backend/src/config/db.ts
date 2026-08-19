@@ -200,8 +200,18 @@ export async function initDbTables() {
         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
         updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
       );
-      ALTER TABLE system_reviews ADD COLUMN IF NOT EXISTS detailed_ratings JSONB;
-      ALTER TABLE system_reviews ALTER COLUMN rating TYPE NUMERIC(3,1);
+      -- 12. landing_page_visits table
+      CREATE TABLE IF NOT EXISTS landing_page_visits (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        source VARCHAR(50) NOT NULL DEFAULT 'direct',
+        utm_source VARCHAR(100),
+        utm_medium VARCHAR(100),
+        utm_campaign VARCHAR(100),
+        referrer TEXT,
+        ip_address VARCHAR(100),
+        user_agent TEXT,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      );
     `);
     console.log('PostgreSQL database tables initialized successfully');
   } catch (err) {

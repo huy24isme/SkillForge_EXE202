@@ -19,6 +19,7 @@ import {
 } from '../controllers/template.controller';
 import { getAuditLogs } from '../controllers/auditLog.controller';
 import { getSettings, updateSettings } from '../controllers/setting.controller';
+import { getTrafficAnalytics } from '../controllers/analytics.controller';
 import { authenticateSystemAdmin } from '../middleware/auth';
 
 const router = Router();
@@ -29,8 +30,9 @@ router.post('/auth/login', login);
 // Authenticated System Admin routes
 router.use(authenticateSystemAdmin);
 
-// Dashboard
+// Dashboard & Analytics
 router.get('/dashboard', getDashboardStats);
+router.get('/analytics/traffic', getTrafficAnalytics);
 
 // Plans
 router.get('/plans', getPlans);

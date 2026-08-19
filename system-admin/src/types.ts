@@ -79,3 +79,29 @@ export interface UserReview {
   status: 'APPROVED' | 'PENDING' | 'REJECTED';
   createdAt: string;
 }
+
+export interface TrafficSourceItem {
+  platform: 'facebook' | 'linkedin' | 'tiktok' | 'direct' | 'other';
+  name: string;
+  count: number;
+  percentage: number;
+  growth: string;
+  color: string;
+  bgColor: string;
+}
+
+export interface MetricReportRow {
+  week: number;
+  facebookReach: number;
+  websiteVisits: number;
+  totalUsers: number;
+  conversionRate: string;
+}
+
+export interface TrafficAnalytics {
+  totalVisits: number;
+  facebookReachTotal?: number;
+  sources: TrafficSourceItem[];
+  metricsTable?: MetricReportRow[];
+  weeklyTrend?: { day: string; facebook: number; tiktok: number; linkedin: number; direct: number }[];
+}

@@ -10,6 +10,7 @@ import {
 } from '../controllers/checkout.controller';
 import { createCustomLead } from '../controllers/customLead.controller';
 import { getPublicReviews, createPublicReview, likePublicReview } from '../controllers/review.controller';
+import { recordVisit, simulateTrafficVisit } from '../controllers/analytics.controller';
 
 const router = Router();
 
@@ -29,6 +30,8 @@ router.post('/custom-leads', createCustomLead);
 // Reviews Endpoints (Public)
 router.get('/reviews', getPublicReviews);
 router.post('/reviews', createPublicReview);
-router.post('/reviews/:id/like', likePublicReview);
+// Analytics Traffic Tracking Endpoints (Public)
+router.post('/analytics/visit', recordVisit);
+router.post('/analytics/simulate', simulateTrafficVisit);
 
 export default router;

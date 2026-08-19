@@ -1,5 +1,5 @@
 import api from './api';
-import { Tenant, Invoice, KpiTemplate, BscTemplate, AuditLog, CustomLead, UserReview } from '../types';
+import { Tenant, Invoice, KpiTemplate, BscTemplate, AuditLog, CustomLead, UserReview, TrafficAnalytics } from '../types';
 
 export interface PlanDto {
   id: string;
@@ -308,6 +308,12 @@ export const systemAdminService = {
 
   updateReviewStatus: (id: string, status: 'APPROVED' | 'REJECTED' | 'PENDING'): Promise<UserReview> =>
     api.patch(`/sa/reviews/${id}/status`, { status }),
+
+  // Landing Page Traffic & Social Reach Analytics
+  getTrafficAnalytics: (): Promise<TrafficAnalytics> => api.get('/sa/analytics/traffic'),
+
+  simulateTrafficVisit: (platform: string, count = 1): Promise<any> =>
+    api.post('/public/analytics/simulate', { platform, count }),
 
   deleteReview: (id: string): Promise<void> => api.delete(`/sa/reviews/${id}`),
 };
