@@ -631,41 +631,66 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
 
           {/* VIEW MODE 3: MODERN CARD GRID */}
           {marketingViewMode === 'grid' && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 animate-in fade-in duration-300">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 animate-in fade-in duration-300">
               {metricsChartData.map((w, idx) => (
                 <div
                   key={idx}
-                  className={`p-3.5 rounded-2xl border transition-all ${w.conversion >= 30
-                    ? 'bg-emerald-950/30 border-emerald-500/40 shadow-lg shadow-emerald-950/40'
-                    : 'bg-white/5 border-white/10 hover:border-white/20'
-                    }`}
+                  className={`p-4 rounded-2xl border flex flex-col justify-between transition-all group hover:scale-[1.02] ${
+                    w.conversion >= 30
+                      ? 'bg-gradient-to-b from-slate-900/90 to-emerald-950/40 border-emerald-500/50 shadow-xl shadow-emerald-950/40'
+                      : 'bg-white/5 border-white/10 hover:border-white/20'
+                  }`}
                 >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-[11px] font-black text-white bg-white/10 px-2 py-0.5 rounded-lg border border-white/10">
-                      {w.name}
+                  <div>
+                    {/* Header */}
+                    <div className="flex items-center justify-between mb-3 border-b border-white/10 pb-2">
+                      <span className="text-xs font-black text-white bg-white/10 px-2.5 py-0.5 rounded-lg border border-white/10">
+                        {w.name}
+                      </span>
+                      {w.conversion >= 30 && (
+                        <span className="text-[10px] font-black text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded-full border border-emerald-500/40 uppercase tracking-wide">
+                          ★ Peak
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Middle Metrics */}
+                    <div className="space-y-1.5 text-xs mb-3">
+                      <div className="flex justify-between text-slate-400">
+                        <span>Facebook Reach:</span>
+                        <span className="font-bold text-blue-300">{w.reach}</span>
+                      </div>
+                      <div className="flex justify-between text-slate-400">
+                        <span>Website Visits:</span>
+                        <span className="font-bold text-purple-300">{w.visits}</span>
+                      </div>
+                      <div className="flex justify-between text-slate-400">
+                        <span>Total Users:</span>
+                        <span className="font-bold text-amber-300">{w.users}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* PROMINENT CONVERSION RATE AT THE BOTTOM */}
+                  <div
+                    className={`mt-2 p-2.5 rounded-xl border text-center flex flex-col items-center justify-center transition-all ${
+                      w.conversion >= 30
+                        ? 'bg-gradient-to-r from-emerald-600/30 via-teal-600/30 to-emerald-600/30 text-emerald-300 border-emerald-500/60 shadow-lg shadow-emerald-500/20'
+                        : w.conversion > 0
+                        ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+                        : 'bg-white/5 text-slate-400 border-white/10'
+                    }`}
+                  >
+                    <span className="text-[9px] uppercase font-mono tracking-widest text-slate-300 font-bold block mb-0.5">
+                      Conversion Rate
                     </span>
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${w.conversion >= 30
-                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
-                      : w.conversion > 0
-                        ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
-                        : 'bg-slate-700/50 text-slate-400'
-                      }`}>
+                    <span
+                      className={`text-base font-black tracking-tight ${
+                        w.conversion >= 30 ? 'text-emerald-300 text-lg animate-pulse' : w.conversion > 0 ? 'text-emerald-400' : 'text-slate-400'
+                      }`}
+                    >
                       {w.conversion}%
                     </span>
-                  </div>
-                  <div className="space-y-1 text-xs">
-                    <div className="flex justify-between text-slate-400">
-                      <span>Reach:</span>
-                      <span className="font-bold text-blue-300">{w.reach}</span>
-                    </div>
-                    <div className="flex justify-between text-slate-400">
-                      <span>Visits:</span>
-                      <span className="font-bold text-purple-300">{w.visits}</span>
-                    </div>
-                    <div className="flex justify-between text-slate-400">
-                      <span>Users:</span>
-                      <span className="font-bold text-amber-300">{w.users}</span>
-                    </div>
                   </div>
                 </div>
               ))}
