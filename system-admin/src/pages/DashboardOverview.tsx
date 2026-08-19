@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { 
-  TrendingUp, 
-  Building2, 
-  Target, 
+import {
+  TrendingUp,
+  Building2,
+  Target,
   Zap,
   Globe,
   Share2,
@@ -11,19 +11,19 @@ import {
   Activity,
   Filter
 } from 'lucide-react';
-import { 
-  ResponsiveContainer, 
-  AreaChart, 
-  Area, 
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
   Line,
   ComposedChart,
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
-  PieChart, 
-  Pie, 
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  PieChart,
+  Pie,
   Cell
 } from 'recharts';
 import { StatCard } from '../components/StatCard';
@@ -40,8 +40,8 @@ const formatVND = (value: number) => {
   return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
 };
 
-export const DashboardOverview: React.FC<DashboardOverviewProps> = ({ 
-  tenants, 
+export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
+  tenants,
   invoices,
   trafficAnalytics,
   onSimulateTraffic
@@ -62,7 +62,7 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
   ];
 
   const activeTenantsCount = tenants.filter(t => t.status === 'active').length;
-  
+
   // Real total revenue from successful invoices
   const totalRevenue = invoices
     .filter(inv => inv.status === 'success')
@@ -88,7 +88,7 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
   // Chart data based on actual paid invoices (no fake spikes)
   const buildRevenueTrendData = () => {
     const currentRev = totalRevenue > 0 ? totalRevenue : totalMRR;
-    
+
     if (currentRev === 0) {
       return [
         { name: 'T1', MRR: 0 },
@@ -171,8 +171,8 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
     <div className="space-y-8 animate-in fade-in duration-300">
       {/* Stats Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard 
-          title="Doanh thu thực tế (Tổng thu)" 
+        <StatCard
+          title="Doanh thu thực tế (Tổng thu)"
           value={formatVND(totalRevenue > 0 ? totalRevenue : totalMRR)}
           subtext="Doanh thu thanh toán qua VietQR & PayOS"
           icon={TrendingUp}
@@ -180,8 +180,8 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
           iconBgColor="bg-emerald-50"
           iconTextColor="text-emerald-600"
         />
-        <StatCard 
-          title="Doanh nghiệp hoạt động" 
+        <StatCard
+          title="Doanh nghiệp hoạt động"
           value={`${activeTenantsCount} / ${tenants.length}`}
           subtext="Khách hàng doanh nghiệp SaaS"
           icon={Building2}
@@ -189,8 +189,8 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
           iconBgColor="bg-indigo-50"
           iconTextColor="text-indigo-600"
         />
-        <StatCard 
-          title="Bảng BSC được khởi tạo" 
+        <StatCard
+          title="Bảng BSC được khởi tạo"
           value={totalBscCreated.toLocaleString()}
           subtext="Khởi tạo chiến lược toàn hệ thống"
           icon={Target}
@@ -198,8 +198,8 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
           iconBgColor="bg-violet-50"
           iconTextColor="text-violet-600"
         />
-        <StatCard 
-          title="Tỷ lệ gia hạn gói" 
+        <StatCard
+          title="Tỷ lệ gia hạn gói"
           value={`${renewalRate}%`}
           subtext="Mức độ duy trì tài khoản"
           icon={Zap}
@@ -225,7 +225,7 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
               </span>
             </div>
           </div>
-          
+
           <div className="h-[320px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart
@@ -234,31 +234,31 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
               >
                 <defs>
                   <linearGradient id="colorMRR" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#059669" stopOpacity={0.2}/>
-                    <stop offset="95%" stopColor="#059669" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#059669" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#059669" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                 <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} tickLine={false} />
-                <YAxis 
-                  stroke="#94a3b8" 
-                  fontSize={12} 
+                <YAxis
+                  stroke="#94a3b8"
+                  fontSize={12}
                   tickLine={false}
                   tickFormatter={(v) => `${(v / 1000000).toFixed(1)}Tr`}
                 />
-                <Tooltip 
+                <Tooltip
                   formatter={(value: any) => [formatVND(Number(value)), 'Doanh thu']}
                   contentStyle={{ backgroundColor: '#fff', borderRadius: '12px', border: '1px solid #f1f5f9' }}
                 />
                 <Legend />
-                <Area 
-                  type="monotone" 
-                  dataKey="MRR" 
-                  name="Doanh thu thực tế (MRR)" 
-                  stroke="#059669" 
+                <Area
+                  type="monotone"
+                  dataKey="MRR"
+                  name="Doanh thu thực tế (MRR)"
+                  stroke="#059669"
                   strokeWidth={2}
-                  fillOpacity={1} 
-                  fill="url(#colorMRR)" 
+                  fillOpacity={1}
+                  fill="url(#colorMRR)"
                 />
               </AreaChart>
             </ResponsiveContainer>
@@ -368,8 +368,8 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
               </span>
             </div>
             <div className="w-full bg-white/10 h-1.5 rounded-full mt-2 overflow-hidden">
-              <div 
-                className="bg-[#1877F2] h-full rounded-full transition-all duration-500" 
+              <div
+                className="bg-[#1877F2] h-full rounded-full transition-all duration-500"
                 style={{ width: `${trafficAnalytics?.sources?.find(s => s.platform === 'facebook')?.percentage || 35}%` }}
               />
             </div>
@@ -400,8 +400,8 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
               </span>
             </div>
             <div className="w-full bg-white/10 h-1.5 rounded-full mt-2 overflow-hidden">
-              <div 
-                className="bg-[#FE2C55] h-full rounded-full transition-all duration-500" 
+              <div
+                className="bg-[#FE2C55] h-full rounded-full transition-all duration-500"
                 style={{ width: `${trafficAnalytics?.sources?.find(s => s.platform === 'tiktok')?.percentage || 27}%` }}
               />
             </div>
@@ -432,8 +432,8 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
               </span>
             </div>
             <div className="w-full bg-white/10 h-1.5 rounded-full mt-2 overflow-hidden">
-              <div 
-                className="bg-[#0A66C2] h-full rounded-full transition-all duration-500" 
+              <div
+                className="bg-[#0A66C2] h-full rounded-full transition-all duration-500"
                 style={{ width: `${trafficAnalytics?.sources?.find(s => s.platform === 'linkedin')?.percentage || 18}%` }}
               />
             </div>
@@ -464,8 +464,8 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
               </span>
             </div>
             <div className="w-full bg-white/10 h-1.5 rounded-full mt-2 overflow-hidden">
-              <div 
-                className="bg-emerald-400 h-full rounded-full transition-all duration-500" 
+              <div
+                className="bg-emerald-400 h-full rounded-full transition-all duration-500"
                 style={{ width: `${((trafficAnalytics?.sources?.find(s => s.platform === 'direct')?.percentage || 14) + (trafficAnalytics?.sources?.find(s => s.platform === 'other')?.percentage || 6))}%` }}
               />
             </div>
@@ -493,11 +493,10 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
               <button
                 type="button"
                 onClick={() => setMarketingViewMode('chart')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-                  marketingViewMode === 'chart'
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
-                    : 'text-slate-400 hover:text-white hover:bg-white/5'
-                }`}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${marketingViewMode === 'chart'
+                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
+                  : 'text-slate-400 hover:text-white hover:bg-white/5'
+                  }`}
               >
                 <Activity className="w-3.5 h-3.5" />
                 Biểu đồ
@@ -505,11 +504,10 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
               <button
                 type="button"
                 onClick={() => setMarketingViewMode('funnel')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-                  marketingViewMode === 'funnel'
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
-                    : 'text-slate-400 hover:text-white hover:bg-white/5'
-                }`}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${marketingViewMode === 'funnel'
+                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
+                  : 'text-slate-400 hover:text-white hover:bg-white/5'
+                  }`}
               >
                 <Filter className="w-3.5 h-3.5" />
                 Phễu Chuyển Đổi
@@ -517,11 +515,10 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
               <button
                 type="button"
                 onClick={() => setMarketingViewMode('grid')}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-                  marketingViewMode === 'grid'
-                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
-                    : 'text-slate-400 hover:text-white hover:bg-white/5'
-                }`}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${marketingViewMode === 'grid'
+                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
+                  : 'text-slate-400 hover:text-white hover:bg-white/5'
+                  }`}
               >
                 <Layers className="w-3.5 h-3.5" />
                 Chi Tiết Tuần
@@ -616,7 +613,7 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
                   <span className="text-[10px] uppercase font-mono tracking-wider text-amber-300 font-bold block">Giai đoạn 3</span>
                   <h5 className="font-bold text-white text-sm">Total Registered Users</h5>
                   <div className="text-3xl font-black text-amber-400">30 <span className="text-xs font-normal text-slate-400">doanh nghiệp</span></div>
-                  <p className="text-[11px] text-slate-300">Đăng ký tài khoản và dùng thử nền tảng</p>
+                  <p className="text-[11px] text-slate-300">Đăng ký tài khoản</p>
                   <div className="pt-2 text-[10px] text-amber-400 font-mono font-bold">21.5% Sign-up Rate</div>
                 </div>
 
@@ -636,25 +633,23 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
           {marketingViewMode === 'grid' && (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 animate-in fade-in duration-300">
               {metricsChartData.map((w, idx) => (
-                <div 
+                <div
                   key={idx}
-                  className={`p-3.5 rounded-2xl border transition-all ${
-                    w.conversion >= 30 
-                      ? 'bg-emerald-950/30 border-emerald-500/40 shadow-lg shadow-emerald-950/40' 
-                      : 'bg-white/5 border-white/10 hover:border-white/20'
-                  }`}
+                  className={`p-3.5 rounded-2xl border transition-all ${w.conversion >= 30
+                    ? 'bg-emerald-950/30 border-emerald-500/40 shadow-lg shadow-emerald-950/40'
+                    : 'bg-white/5 border-white/10 hover:border-white/20'
+                    }`}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-[11px] font-black text-white bg-white/10 px-2 py-0.5 rounded-lg border border-white/10">
                       {w.name}
                     </span>
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                      w.conversion >= 30 
-                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
-                        : w.conversion > 0 
-                          ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
-                          : 'bg-slate-700/50 text-slate-400'
-                    }`}>
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${w.conversion >= 30
+                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                      : w.conversion > 0
+                        ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+                        : 'bg-slate-700/50 text-slate-400'
+                      }`}>
                       {w.conversion}%
                     </span>
                   </div>
@@ -736,23 +731,21 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
                       <td className="py-3 font-semibold text-slate-800">{inv.invoiceCode}</td>
                       <td className="py-3 text-slate-600">{inv.tenantName}</td>
                       <td className="py-3">
-                        <span className={`inline-flex px-2 py-0.5 rounded-full font-bold text-[10px] ${
-                          inv.packageType === 'Custom' || inv.packageType === 'Enterprise' || inv.packageType === 'Growth'
-                            ? 'bg-purple-50 text-purple-700 border border-purple-200'
-                            : 'bg-teal-50 text-teal-800 border border-teal-200'
-                        }`}>
+                        <span className={`inline-flex px-2 py-0.5 rounded-full font-bold text-[10px] ${inv.packageType === 'Custom' || inv.packageType === 'Enterprise' || inv.packageType === 'Growth'
+                          ? 'bg-purple-50 text-purple-700 border border-purple-200'
+                          : 'bg-teal-50 text-teal-800 border border-teal-200'
+                          }`}>
                           {inv.packageType === 'Custom' || inv.packageType === 'Enterprise' || inv.packageType === 'Growth' ? 'Gói Tùy Chỉnh' : 'Gói Cơ Bản'}
                         </span>
                       </td>
                       <td className="py-3 font-bold text-slate-800">{formatVND(inv.amount)}</td>
                       <td className="py-3 text-right">
-                        <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                          inv.status === 'success'
-                            ? 'bg-emerald-50 text-emerald-700'
-                            : inv.status === 'pending'
-                              ? 'bg-amber-50 text-amber-700'
-                              : 'bg-rose-50 text-rose-700'
-                        }`}>
+                        <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold ${inv.status === 'success'
+                          ? 'bg-emerald-50 text-emerald-700'
+                          : inv.status === 'pending'
+                            ? 'bg-amber-50 text-amber-700'
+                            : 'bg-rose-50 text-rose-700'
+                          }`}>
                           {inv.status === 'success' ? 'Thành công' : inv.status === 'pending' ? 'Đang xử lý' : 'Thất bại'}
                         </span>
                       </td>
@@ -775,7 +768,7 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
             <h3 className="font-bold text-slate-800 text-base">Hành vi người dùng</h3>
             <p className="text-xs text-slate-400">Các hoạt động thao tác hệ thống nổi bật</p>
           </div>
-          
+
           <div className="space-y-4 my-6">
             <div className="flex gap-3">
               <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-1.5 shrink-0" />
@@ -799,7 +792,7 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
               </div>
             </div>
           </div>
-          
+
           <div className="bg-slate-50 p-3 rounded-xl flex items-center justify-between text-xs text-slate-600">
             <span>Phiên bản Core Engine:</span>
             <span className="font-bold text-slate-800">v2.4.1-stable</span>
