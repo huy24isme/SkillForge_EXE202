@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   TrendingUp, 
   Building2, 
@@ -6,12 +6,17 @@ import {
   Zap,
   Globe,
   Share2,
-  Sparkles
+  Sparkles,
+  Layers,
+  Activity,
+  Filter
 } from 'lucide-react';
 import { 
   ResponsiveContainer, 
   AreaChart, 
   Area, 
+  Line,
+  ComposedChart,
   XAxis, 
   YAxis, 
   CartesianGrid, 
@@ -41,6 +46,21 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
   trafficAnalytics,
   onSimulateTraffic
 }) => {
+  const [marketingViewMode, setMarketingViewMode] = useState<'chart' | 'funnel' | 'grid'>('chart');
+
+  const metricsChartData = [
+    { name: 'Tuần 3', reach: 295, visits: 14, users: 0, conversion: 0 },
+    { name: 'Tuần 4', reach: 67, visits: 9, users: 0, conversion: 0 },
+    { name: 'Tuần 5', reach: 51, visits: 12, users: 2, conversion: 16.67 },
+    { name: 'Tuần 6', reach: 56, visits: 10, users: 4, conversion: 20 },
+    { name: 'Tuần 7', reach: 50, visits: 15, users: 7, conversion: 20 },
+    { name: 'Tuần 8', reach: 82, visits: 11, users: 10, conversion: 27.27 },
+    { name: 'Tuần 9', reach: 75, visits: 16, users: 14, conversion: 25 },
+    { name: 'Tuần 10', reach: 260, visits: 13, users: 18, conversion: 30.77 },
+    { name: 'Tuần 11', reach: 255, visits: 17, users: 22, conversion: 23.53 },
+    { name: 'Tuần 12', reach: 212, visits: 22, users: 30, conversion: 36.36 },
+  ];
+
   const activeTenantsCount = tenants.filter(t => t.status === 'active').length;
   
   // Real total revenue from successful invoices
@@ -452,108 +472,210 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
           </div>
         </div>
 
-        {/* METRICS & ACTUAL RESULTS Table Card (Exact User Table) */}
-        <div className="bg-white/5 backdrop-blur-md p-5 rounded-2xl border border-white/10 space-y-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-            <h4 className="text-base font-black text-white uppercase tracking-wider flex items-center gap-2">
-              <span>METRICS & ACTUAL RESULTS</span>
-              <span className="text-[10px] bg-blue-500/20 text-blue-300 font-normal px-2.5 py-0.5 rounded-full border border-blue-500/30 uppercase tracking-normal">
-                Báo cáo Tuần 3 - Tuần 12
-              </span>
-            </h4>
-            <span className="text-xs text-slate-300 font-medium">
-              Tỷ lệ chuyển đổi Tuần 12 cao nhất: <strong className="text-emerald-400 font-bold">36,36%</strong>
-            </span>
+        {/* METRICS & ACTUAL RESULTS Executive Analytics Card */}
+        <div className="bg-white/5 backdrop-blur-md p-6 rounded-3xl border border-white/10 space-y-6">
+          {/* Section Sub-Header & Mode Switcher */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-4">
+            <div>
+              <h4 className="text-lg font-black text-white uppercase tracking-wider flex items-center gap-2">
+                <span>METRICS & ACTUAL RESULTS</span>
+                <span className="text-[10px] bg-blue-500/20 text-blue-300 font-bold px-2.5 py-0.5 rounded-full border border-blue-500/30 uppercase tracking-normal">
+                  Báo cáo Tuần 3 - Tuần 12
+                </span>
+              </h4>
+              <p className="text-xs text-slate-400 mt-1">
+                Phân tích tăng trưởng lưu lượng Facebook Reach, Lượt ghé thăm Website & Tỷ lệ chuyển đổi khách hàng
+              </p>
+            </div>
+
+            {/* View Mode Switcher Buttons */}
+            <div className="flex items-center gap-1.5 bg-slate-900/80 p-1 rounded-2xl border border-white/10 self-start md:self-auto">
+              <button
+                type="button"
+                onClick={() => setMarketingViewMode('chart')}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                  marketingViewMode === 'chart'
+                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
+                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <Activity className="w-3.5 h-3.5" />
+                Biểu đồ
+              </button>
+              <button
+                type="button"
+                onClick={() => setMarketingViewMode('funnel')}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                  marketingViewMode === 'funnel'
+                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
+                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <Filter className="w-3.5 h-3.5" />
+                Phễu Chuyển Đổi
+              </button>
+              <button
+                type="button"
+                onClick={() => setMarketingViewMode('grid')}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                  marketingViewMode === 'grid'
+                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30'
+                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                <Layers className="w-3.5 h-3.5" />
+                Chi Tiết Tuần
+              </button>
+            </div>
           </div>
 
-          <div className="overflow-x-auto rounded-xl border border-blue-500/30">
-            <table className="w-full text-center text-xs border-collapse">
-              <thead>
-                <tr className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black text-sm">
-                  <th className="py-3 px-4 text-left border-r border-blue-500/40 w-44 uppercase">Week</th>
-                  <th className="py-3 px-3 border-r border-blue-500/40">3</th>
-                  <th className="py-3 px-3 border-r border-blue-500/40">4</th>
-                  <th className="py-3 px-3 border-r border-blue-500/40">5</th>
-                  <th className="py-3 px-3 border-r border-blue-500/40">6</th>
-                  <th className="py-3 px-3 border-r border-blue-500/40">7</th>
-                  <th className="py-3 px-3 border-r border-blue-500/40">8</th>
-                  <th className="py-3 px-3 border-r border-blue-500/40">9</th>
-                  <th className="py-3 px-3 border-r border-blue-500/40">10</th>
-                  <th className="py-3 px-3 border-r border-blue-500/40">11</th>
-                  <th className="py-3 px-3">12</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/10 bg-slate-900/60 text-slate-200 font-mono">
-                {/* Facebook Reach */}
-                <tr className="hover:bg-white/5 transition-colors">
-                  <td className="py-3 px-4 text-left font-bold text-white border-r border-white/10 bg-white/5 font-sans">
-                    Facebook Reach
-                  </td>
-                  <td className="py-3 px-3 border-r border-white/10 font-black text-white">295</td>
-                  <td className="py-3 px-3 border-r border-white/10">67</td>
-                  <td className="py-3 px-3 border-r border-white/10">51</td>
-                  <td className="py-3 px-3 border-r border-white/10">56</td>
-                  <td className="py-3 px-3 border-r border-white/10">50</td>
-                  <td className="py-3 px-3 border-r border-white/10">82</td>
-                  <td className="py-3 px-3 border-r border-white/10">75</td>
-                  <td className="py-3 px-3 border-r border-white/10 font-bold">260</td>
-                  <td className="py-3 px-3 border-r border-white/10 font-bold">255</td>
-                  <td className="py-3 px-3 font-bold text-blue-300">212</td>
-                </tr>
+          {/* VIEW MODE 1: INTERACTIVE CHART */}
+          {marketingViewMode === 'chart' && (
+            <div className="space-y-4 animate-in fade-in duration-300">
+              <div className="flex flex-wrap items-center justify-between text-xs gap-3 bg-white/5 p-3 rounded-2xl border border-white/5">
+                <div className="flex items-center gap-4 flex-wrap">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-[#1877F2]" />
+                    <span className="text-slate-300 font-semibold">Facebook Reach</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-[#8B5CF6]" />
+                    <span className="text-slate-300 font-semibold">Website Visits</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-[#F59E0B]" />
+                    <span className="text-slate-300 font-semibold">Total Users</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-[#10B981]" />
+                    <span className="text-emerald-400 font-bold">Conversion Rate (%)</span>
+                  </div>
+                </div>
+                <div className="text-[11px] text-slate-400">
+                  Chuyển đổi đỉnh: <span className="font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">36.36% (Tuần 12)</span>
+                </div>
+              </div>
 
-                {/* Website Visits */}
-                <tr className="hover:bg-white/5 transition-colors">
-                  <td className="py-3 px-4 text-left font-bold text-white border-r border-white/10 bg-white/5 font-sans">
-                    Website Visits
-                  </td>
-                  <td className="py-3 px-3 border-r border-white/10">14</td>
-                  <td className="py-3 px-3 border-r border-white/10">9</td>
-                  <td className="py-3 px-3 border-r border-white/10">12</td>
-                  <td className="py-3 px-3 border-r border-white/10">10</td>
-                  <td className="py-3 px-3 border-r border-white/10">15</td>
-                  <td className="py-3 px-3 border-r border-white/10">11</td>
-                  <td className="py-3 px-3 border-r border-white/10">16</td>
-                  <td className="py-3 px-3 border-r border-white/10">13</td>
-                  <td className="py-3 px-3 border-r border-white/10 font-black text-white">17</td>
-                  <td className="py-3 px-3 font-black text-[#3AE7E1]">22</td>
-                </tr>
+              <div className="h-[340px] w-full pt-2">
+                <ResponsiveContainer width="100%" height="100%">
+                  <ComposedChart data={metricsChartData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="convGradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#10B981" stopOpacity={0.4} />
+                        <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#ffffff10" vertical={false} />
+                    <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={{ stroke: '#ffffff15' }} />
+                    <YAxis yAxisId="left" stroke="#94a3b8" fontSize={11} tickLine={false} axisLine={{ stroke: '#ffffff15' }} />
+                    <YAxis yAxisId="right" orientation="right" stroke="#10B981" fontSize={11} tickLine={false} axisLine={{ stroke: '#ffffff15' }} unit="%" />
+                    <Tooltip
+                      contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '16px', color: '#fff', fontSize: '12px' }}
+                      formatter={(val: any, name: string) => {
+                        if (name === 'conversion') return [`${val}%`, 'Tỷ lệ chuyển đổi'];
+                        if (name === 'reach') return [val, 'Facebook Reach'];
+                        if (name === 'visits') return [val, 'Website Visits'];
+                        if (name === 'users') return [val, 'Total Users'];
+                        return [val, name];
+                      }}
+                    />
+                    <Area yAxisId="right" type="monotone" dataKey="conversion" fill="url(#convGradient)" stroke="#10B981" strokeWidth={2.5} />
+                    <Line yAxisId="left" type="monotone" dataKey="reach" stroke="#1877F2" strokeWidth={2.5} dot={{ r: 4, fill: '#1877F2' }} />
+                    <Line yAxisId="left" type="monotone" dataKey="visits" stroke="#8B5CF6" strokeWidth={2.5} dot={{ r: 4, fill: '#8B5CF6' }} />
+                    <Line yAxisId="left" type="monotone" dataKey="users" stroke="#F59E0B" strokeWidth={2.5} dot={{ r: 4, fill: '#F59E0B' }} />
+                  </ComposedChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          )}
 
-                {/* Total Users */}
-                <tr className="hover:bg-white/5 transition-colors">
-                  <td className="py-3 px-4 text-left font-bold text-white border-r border-white/10 bg-white/5 font-sans">
-                    Total Users
-                  </td>
-                  <td className="py-3 px-3 border-r border-white/10">0</td>
-                  <td className="py-3 px-3 border-r border-white/10">0</td>
-                  <td className="py-3 px-3 border-r border-white/10">2</td>
-                  <td className="py-3 px-3 border-r border-white/10">4</td>
-                  <td className="py-3 px-3 border-r border-white/10">7</td>
-                  <td className="py-3 px-3 border-r border-white/10">10</td>
-                  <td className="py-3 px-3 border-r border-white/10">14</td>
-                  <td className="py-3 px-3 border-r border-white/10">18</td>
-                  <td className="py-3 px-3 border-r border-white/10 font-black text-white">22</td>
-                  <td className="py-3 px-3 font-black text-emerald-400">30</td>
-                </tr>
+          {/* VIEW MODE 2: CONVERSION FUNNEL */}
+          {marketingViewMode === 'funnel' && (
+            <div className="space-y-4 animate-in fade-in duration-300">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                {/* Stage 1 */}
+                <div className="bg-gradient-to-b from-blue-600/20 to-blue-900/10 border border-blue-500/30 p-5 rounded-2xl space-y-2 relative">
+                  <span className="text-[10px] uppercase font-mono tracking-wider text-blue-300 font-bold block">Giai đoạn 1</span>
+                  <h5 className="font-bold text-white text-sm">Facebook Reach Total</h5>
+                  <div className="text-3xl font-black text-white">1.403 <span className="text-xs font-normal text-slate-400">lượt</span></div>
+                  <p className="text-[11px] text-slate-300">Tổng tiếp cận từ các chiến dịch Facebook Ads & bài viết</p>
+                  <div className="pt-2 text-[10px] text-blue-400 font-mono font-bold">100% Top-of-Funnel</div>
+                </div>
 
-                {/* Conversion Rate */}
-                <tr className="hover:bg-white/5 transition-colors bg-emerald-500/5">
-                  <td className="py-3 px-4 text-left font-bold text-emerald-300 border-r border-white/10 bg-emerald-500/10 font-sans">
-                    Conversion Rate
-                  </td>
-                  <td className="py-3 px-3 border-r border-white/10 text-slate-400">0%</td>
-                  <td className="py-3 px-3 border-r border-white/10 text-slate-400">0%</td>
-                  <td className="py-3 px-3 border-r border-white/10 font-semibold text-emerald-300">16,67%</td>
-                  <td className="py-3 px-3 border-r border-white/10 font-semibold text-emerald-300">20%</td>
-                  <td className="py-3 px-3 border-r border-white/10 font-semibold text-emerald-300">20%</td>
-                  <td className="py-3 px-3 border-r border-white/10 font-semibold text-emerald-300">27,27%</td>
-                  <td className="py-3 px-3 border-r border-white/10 font-semibold text-emerald-300">25%</td>
-                  <td className="py-3 px-3 border-r border-white/10 font-black text-emerald-400 bg-emerald-500/20">30,77%</td>
-                  <td className="py-3 px-3 border-r border-white/10 font-semibold text-emerald-300">23,53%</td>
-                  <td className="py-3 px-3 font-black text-emerald-300 bg-emerald-500/30 text-sm">36,36%</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+                {/* Stage 2 */}
+                <div className="bg-gradient-to-b from-purple-600/20 to-purple-900/10 border border-purple-500/30 p-5 rounded-2xl space-y-2 relative">
+                  <span className="text-[10px] uppercase font-mono tracking-wider text-purple-300 font-bold block">Giai đoạn 2</span>
+                  <h5 className="font-bold text-white text-sm">Website Visits</h5>
+                  <div className="text-3xl font-black text-[#3AE7E1]">139 <span className="text-xs font-normal text-slate-400">lượt</span></div>
+                  <p className="text-[11px] text-slate-300">Lượt click vào xem chi tiết Landing Page SkillForge</p>
+                  <div className="pt-2 text-[10px] text-purple-400 font-mono font-bold">9.9% Traffic Click-Through</div>
+                </div>
+
+                {/* Stage 3 */}
+                <div className="bg-gradient-to-b from-amber-600/20 to-amber-900/10 border border-amber-500/30 p-5 rounded-2xl space-y-2 relative">
+                  <span className="text-[10px] uppercase font-mono tracking-wider text-amber-300 font-bold block">Giai đoạn 3</span>
+                  <h5 className="font-bold text-white text-sm">Total Registered Users</h5>
+                  <div className="text-3xl font-black text-amber-400">30 <span className="text-xs font-normal text-slate-400">doanh nghiệp</span></div>
+                  <p className="text-[11px] text-slate-300">Đăng ký tài khoản và dùng thử nền tảng</p>
+                  <div className="pt-2 text-[10px] text-amber-400 font-mono font-bold">21.5% Sign-up Rate</div>
+                </div>
+
+                {/* Stage 4 */}
+                <div className="bg-gradient-to-b from-emerald-600/20 to-emerald-900/10 border border-emerald-500/30 p-5 rounded-2xl space-y-2 relative">
+                  <span className="text-[10px] uppercase font-mono tracking-wider text-emerald-300 font-bold block">Giai đoạn 4</span>
+                  <h5 className="font-bold text-white text-sm">Conversion Rate Peak</h5>
+                  <div className="text-3xl font-black text-emerald-400">36.36%</div>
+                  <p className="text-[11px] text-slate-300">Tỷ lệ chuyển đổi khách hàng đăng ký mua gói Tuần 12</p>
+                  <div className="pt-2 text-[10px] text-emerald-400 font-mono font-bold">★ Đạt Đỉnh Cao Nhất</div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* VIEW MODE 3: MODERN CARD GRID */}
+          {marketingViewMode === 'grid' && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 animate-in fade-in duration-300">
+              {metricsChartData.map((w, idx) => (
+                <div 
+                  key={idx}
+                  className={`p-3.5 rounded-2xl border transition-all ${
+                    w.conversion >= 30 
+                      ? 'bg-emerald-950/30 border-emerald-500/40 shadow-lg shadow-emerald-950/40' 
+                      : 'bg-white/5 border-white/10 hover:border-white/20'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[11px] font-black text-white bg-white/10 px-2 py-0.5 rounded-lg border border-white/10">
+                      {w.name}
+                    </span>
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                      w.conversion >= 30 
+                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                        : w.conversion > 0 
+                          ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+                          : 'bg-slate-700/50 text-slate-400'
+                    }`}>
+                      {w.conversion}%
+                    </span>
+                  </div>
+                  <div className="space-y-1 text-xs">
+                    <div className="flex justify-between text-slate-400">
+                      <span>Reach:</span>
+                      <span className="font-bold text-blue-300">{w.reach}</span>
+                    </div>
+                    <div className="flex justify-between text-slate-400">
+                      <span>Visits:</span>
+                      <span className="font-bold text-purple-300">{w.visits}</span>
+                    </div>
+                    <div className="flex justify-between text-slate-400">
+                      <span>Users:</span>
+                      <span className="font-bold text-amber-300">{w.users}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Demo Simulation Bar for System Admin */}
