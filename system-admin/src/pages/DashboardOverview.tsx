@@ -629,43 +629,43 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
             </div>
           )}
 
-          {/* VIEW MODE 3: MODERN CARD GRID */}
+          {/* VIEW MODE 3: MODERN CARD GRID (ALL 10 WEEKS IN 1 SINGLE FRAME ROW) */}
           {marketingViewMode === 'grid' && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 animate-in fade-in duration-300">
+            <div className="grid grid-cols-5 lg:grid-cols-10 gap-2 animate-in fade-in duration-300 overflow-x-auto pb-1">
               {metricsChartData.map((w, idx) => (
                 <div
                   key={idx}
-                  className={`p-4 rounded-2xl border flex flex-col justify-between transition-all group hover:scale-[1.02] ${
+                  className={`p-2.5 rounded-2xl border flex flex-col justify-between transition-all group hover:scale-[1.03] min-w-[90px] ${
                     w.conversion >= 30
-                      ? 'bg-gradient-to-b from-slate-900/90 to-emerald-950/40 border-emerald-500/50 shadow-xl shadow-emerald-950/40'
+                      ? 'bg-gradient-to-b from-slate-900/90 to-emerald-950/40 border-emerald-500/50 shadow-lg shadow-emerald-950/40'
                       : 'bg-white/5 border-white/10 hover:border-white/20'
                   }`}
                 >
                   <div>
                     {/* Header */}
-                    <div className="flex items-center justify-between mb-3 border-b border-white/10 pb-2">
-                      <span className="text-xs font-black text-white bg-white/10 px-2.5 py-0.5 rounded-lg border border-white/10">
+                    <div className="flex items-center justify-between mb-2 border-b border-white/10 pb-1.5">
+                      <span className="text-[10px] font-black text-white bg-white/10 px-1.5 py-0.5 rounded-md border border-white/10 shrink-0">
                         {w.name}
                       </span>
                       {w.conversion >= 30 && (
-                        <span className="text-[10px] font-black text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded-full border border-emerald-500/40 uppercase tracking-wide">
-                          ★ Peak
+                        <span className="text-[8px] font-black text-emerald-400 bg-emerald-500/20 px-1 py-0.2 rounded border border-emerald-500/40 uppercase">
+                          Peak
                         </span>
                       )}
                     </div>
 
                     {/* Middle Metrics */}
-                    <div className="space-y-1.5 text-xs mb-3">
-                      <div className="flex justify-between text-slate-400">
-                        <span>Facebook Reach:</span>
+                    <div className="space-y-1 text-[10px] mb-2">
+                      <div className="flex justify-between items-center text-slate-400">
+                        <span className="text-[9px]">Reach:</span>
                         <span className="font-bold text-blue-300">{w.reach}</span>
                       </div>
-                      <div className="flex justify-between text-slate-400">
-                        <span>Website Visits:</span>
+                      <div className="flex justify-between items-center text-slate-400">
+                        <span className="text-[9px]">Visits:</span>
                         <span className="font-bold text-purple-300">{w.visits}</span>
                       </div>
-                      <div className="flex justify-between text-slate-400">
-                        <span>Total Users:</span>
+                      <div className="flex justify-between items-center text-slate-400">
+                        <span className="text-[9px]">Users:</span>
                         <span className="font-bold text-amber-300">{w.users}</span>
                       </div>
                     </div>
@@ -673,20 +673,20 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
 
                   {/* PROMINENT CONVERSION RATE AT THE BOTTOM */}
                   <div
-                    className={`mt-2 p-2.5 rounded-xl border text-center flex flex-col items-center justify-center transition-all ${
+                    className={`mt-1 p-1.5 rounded-xl border text-center flex flex-col items-center justify-center transition-all ${
                       w.conversion >= 30
-                        ? 'bg-gradient-to-r from-emerald-600/30 via-teal-600/30 to-emerald-600/30 text-emerald-300 border-emerald-500/60 shadow-lg shadow-emerald-500/20'
+                        ? 'bg-gradient-to-r from-emerald-600/30 via-teal-600/30 to-emerald-600/30 text-emerald-300 border-emerald-500/60 shadow-md shadow-emerald-500/20'
                         : w.conversion > 0
                         ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
                         : 'bg-white/5 text-slate-400 border-white/10'
                     }`}
                   >
-                    <span className="text-[9px] uppercase font-mono tracking-widest text-slate-300 font-bold block mb-0.5">
-                      Conversion Rate
+                    <span className="text-[8px] uppercase font-mono tracking-wider text-slate-300 font-bold block leading-none mb-0.5">
+                      CONV. RATE
                     </span>
                     <span
-                      className={`text-base font-black tracking-tight ${
-                        w.conversion >= 30 ? 'text-emerald-300 text-lg animate-pulse' : w.conversion > 0 ? 'text-emerald-400' : 'text-slate-400'
+                      className={`text-xs font-black tracking-tight ${
+                        w.conversion >= 30 ? 'text-emerald-300 text-sm animate-pulse' : w.conversion > 0 ? 'text-emerald-400' : 'text-slate-400'
                       }`}
                     >
                       {w.conversion}%
